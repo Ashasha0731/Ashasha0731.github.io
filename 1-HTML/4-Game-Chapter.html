@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>章節中</title>
+    <link rel="icon" type="image/png" href="../0-IMAGE/0_Nav/logo-遊戲廳.png">    <!-- 網站圖標設定 -->
+    <style>
+/* ==================== 全域樣式 ==================== */
+        body{
+            background-image: url('../0-IMAGE/1_Guide-page/星空背景.gif');
+            background-size: cover;       /* 覆蓋整個容器 */
+            background-repeat: repeat; /* 重複方便滾動 */
+            animation: move-bg 60s linear infinite;
+        }
+
+        @keyframes move-bg {
+            0% { background-position: 0 0; }
+            100% { background-position: -5000px 0; } /* 往左移動 */
+        }
+
+/* ==================== 導覽列 ====================== */
+        #header-container {
+            position: fixed; /* 固定在螢幕頂端 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px; /* 導覽列高度 */
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);/* 懸浮感陰影 */
+        }
+
+/* =================== 返回上一頁 ===================== */
+        /* 左上角返回按鈕 */
+        .back-btn {
+            position: fixed;
+            top: 95px;
+            left: 20px;
+            z-index: 2000;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: 2px solid white;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(250, 247, 247, 0.978);
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.05);
+        }
+
+/* =================== 章節標題 ===================== */
+        .chapter-img{
+            width: 750px;           /* 讓圖片比螢幕大 */
+            height: 80px;
+            position: fixed;
+            left: 0px;
+            top: 85px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);     /*增加符合PNG的陰影*/
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center left;  /* 從底部中心放大 */
+        }
+
+        .chapter-title {    /*章節*/
+            font-size: 40px;
+            position: fixed;
+            top: 95px;
+            left: 110px;
+            z-index: 100;
+            color: rgb(255, 255, 255);
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px rgb(0, 0, 0),
+                0 0 20px rgb(0, 0, 0);
+            font-family: "微軟正黑體", sans-serif;
+            display: block;          /* 確保可被置中 */
+            width: 100%;             /* 可選，保證占滿橫向置中 */
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center left;  /* 從底部中心放大 */
+        }
+
+        .chapter-img:hover ,.chapter-title:hover {
+            transform: scale(1.2); /* 保持旋轉角度同時放大 */
+        }
+
+
+/* ==================== 章節物件 ====================== */
+        /* 草地img */
+        .container-Grass {
+            width: 100vw;          /* 視窗寬度 */
+            height: 100vh;         /* 視窗高度 */
+            overflow: hidden;      /* 超出部分裁剪 */
+        }
+
+        .img-Grass {
+            width: 3000px;           /* 讓圖片比螢幕大 */
+            height: 500px;
+            position: fixed;
+            left: -520px;
+            bottom: 0px;
+            z-index: -1;
+            filter: drop-shadow(0px 0px 30px #47bef1ae);     /*增加符合PNG的陰影*/
+            transform:  rotate(-5deg);
+        }
+
+        /* 0教學內容img */
+        .img-0 {
+            width: 200px; 
+            height: 200px;
+            position: fixed;
+            left: 200px;
+            bottom: 80px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);     /*增加符合PNG的陰影*/
+            transform: rotate(-20deg); /* 旋轉  X 度 */
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center bottom;  /* 從底部中心放大 */
+        }
+
+        .img-text0 {
+            width: 300px; 
+            height: auto;
+            position: fixed;
+            left: 200px;
+            bottom: 70px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);     /*增加符合PNG的陰影*/
+            transform: rotate(-5deg); /* 旋轉  X 度 */
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center bottom;  /* 從底部中心放大 */
+        }
+
+        .img-0:hover {
+            transform: scale(1.1) rotate(-20deg); /* 保持旋轉角度同時放大 */
+        }
+
+        .img-text0:hover {
+            transform: scale(1.1) rotate(-20deg); /* 保持旋轉角度同時放大 */
+            z-index: 500; /* 放大時在最上層 */
+        }
+
+        /* 1互動測驗區img */
+        .img-1 {
+            width: 280px; 
+            height: 280px;
+            position: fixed;
+            left: 450px;
+            bottom: 195px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);     /*增加符合PNG的陰影*/
+            transform: rotate(-5deg); /* 旋轉  X 度 */
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center bottom;  /* 從底部中心放大 */
+        }
+
+        .img-text1 {
+            width: 300px; 
+            height: auto;
+            position: fixed;
+            left: 550px;
+            bottom: 380px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);     /*增加符合PNG的陰影*/
+            transform: rotate(-5deg); /* 旋轉  X 度 */
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center bottom;  /* 從底部中心放大 */
+        }
+
+        .img-1:hover {
+            transform: scale(1.1) rotate(-20deg); /* 保持旋轉角度同時放大 */
+        }
+        .img-text1:hover {
+            transform: scale(1.1) rotate(-20deg); /* 保持旋轉角度同時放大 */
+            z-index: 500; /* 放大時在最上層 */
+        }
+        
+        /* 2實境模擬測驗img */
+        .img-2 {
+            width: 400px; 
+            height: 400px;
+            position: fixed;
+            left: 950px;
+            bottom:200px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);     /*增加符合PNG的陰影*/
+            transform: rotate(-22deg); /* 旋轉  X 度 */
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center bottom;  /* 從底部中心放大 */
+        }
+
+        .img-text2 {
+            width: 300px; 
+            height: auto;
+            position: fixed;
+            left: 1000px;
+            bottom: 190px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);     /*增加符合PNG的陰影*/
+            transform: rotate(8deg); /* 旋轉  X 度 */
+            transition: transform 0.3s ease; /* 平滑過渡 */
+            transform-origin: center bottom;  /* 從底部中心放大 */
+        }
+
+        .img-2:hover{
+            transform: scale(1.1) rotate(-20deg); /* 保持旋轉角度同時放大 */
+        }
+        .img-text2:hover {
+            transform: scale(1.1) rotate(-20deg); /* 保持旋轉角度同時放大 */
+            z-index: 500; /* 放大時在最上層 */
+        }
+
+/* ===================== 底列 =================== */
+        .footer {
+            width: 100%;
+            height: 50px; /* 高一點更舒適 */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+
+            /* 漸層 + 半透明 + 毛玻璃 */
+            background: linear-gradient(120deg, rgba(9,9,9,0.4), rgba(39,40,46,0.6), rgba(15,15,15,0.8));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255,255,255,0.2); /* 頂部細邊框增加層次 */
+
+            /* 文字樣式 */
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(0,0,0,0.7);
+
+            /* 置中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            /* 動態光暈（可選） */
+            box-shadow: 0 0 15px rgba(255,255,255,0.2) inset;
+        }
+
+    </style>
+</head>
+
+<!--------------------------- html ----------------------------->
+<body>
+    <!-- 導覽列 -->
+    <header>
+        <div id="header-container"></div>
+        <button id="back-btn" class="back-btn" onclick="enterBack()">返回</button>
+        <!-- 章節標題 -->
+        <img class="chapter-img" src="../0-IMAGE/4-Game-Chapter/章節旗幟.png" alt="章節旗幟">
+        <span id="chapterTitle" class="chapter-title">第一章  網頁安全探索</span>
+    </header>
+    
+    <!-- 主頁面 -->
+    <main>
+        <!-- 草地 -->
+        <div class="container-Grass"><img class="img-Grass" src="../0-IMAGE/4-Game-Chapter/月亮.png" alt="月亮Grass"></div>
+        <!-- 章節細項按鈕 -->
+        <div>
+            <!-- 0教學內容 -->
+            <a class="container-0">
+                <buttom onclick="enterTeach0()">
+                    <img class="img-0" src="../0-IMAGE/4-Game-Chapter/0教學內容.png" alt="0教學內容">
+                    <img class="img-text0" src="../0-IMAGE/4-Game-Chapter/0教學內容-text.png" alt="0教學內容_文字">
+                </buttom>
+            </a>
+            <!-- 1互動測驗區 -->
+            <a class="container-1">
+                <buttom onclick="enterInteractive1()">
+                    <img class="img-1" src="../0-IMAGE/4-Game-Chapter/1互動測驗區.png" alt="1互動測驗區">
+                    <img class="img-text1" src="../0-IMAGE/4-Game-Chapter/1互動測驗區-text.png" alt="0教學內容_文字">
+                </buttom>
+            </a>
+            <!-- 2實境模擬測驗 -->
+            <a class="container-2">
+                <buttom onclick="enterSimulation2()">
+                    <img class="img-2" src="../0-IMAGE/4-Game-Chapter/2實境模擬測驗.png" alt="2實境模擬測驗">
+                    <img class="img-text2" src="../0-IMAGE/4-Game-Chapter/2實境模擬測驗-text.png" alt="0教學內容_文字">
+                </buttom>
+            </a>
+        </div>
+        
+
+    </main>
+
+
+
+    <!-- 頁尾 -->
+    <footer class="footer">
+        <!-- 可放文字或按鈕 -->
+        <span >© 2025 中學生資訊安全網</span>
+    </footer>
+
+
+
+<!---------------------------- JS ------------------------------>
+    <!-- 導覽列 -->
+    <script>
+        //載入導覽列    // 使用 fetch 載入 header.html
+        fetch('./0_Nav-2.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header-container').innerHTML = data;
+        })
+        .catch(error => {
+            console.error('載入 HTML 失敗:', error);
+        });
+    </script>
+
+    <!-- 4-Game-Chapter.html -->
+    <!-- 切換對應之章節內容 -->
+    <script>
+        // 標題
+        const params = new URLSearchParams(window.location.search);
+        const title = params.get('title');
+        const subtitle = params.get('subtitle');
+        const playerName = sessionStorage.getItem('playerName') || "未命名玩家";
+        const playerGrade = sessionStorage.getItem('playerGrade') || "未設定年級";
+
+        sessionStorage.setItem('currentChapterTitle', title);
+        sessionStorage.setItem('currentChapterSubtitle', subtitle);
+        sessionStorage.setItem('currentPlayerName', playerName);
+        sessionStorage.setItem('currentPlayerGrade', playerGrade);
+        // 通用跳轉 function： 轉跳頁面，並帶上 title & subtitle 參數
+
+        console.log(title, subtitle, playerName, playerGrade); // 確認使用的資料
+
+        document.getElementById('chapterTitle').innerHTML =`${title || '章節未定義'}　<span>${subtitle || ''}</span>`;
+    
+        function goToPage(page) {
+            const encodedTitle = encodeURIComponent(title || '');
+            const encodedSubtitle = encodeURIComponent(subtitle || '');
+            window.location.href = `${page}.html?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(subtitle)}&playerName=${encodeURIComponent(playerName)}&playerGrade=${encodeURIComponent(playerGrade)}`;
+
+        }
+        // ▶返回按鈕
+        function enterBack() { goToPage('3-Game-List-Chapter'); }
+        // ▶按鈕-0教學內容
+        function enterTeach0() { goToPage('4.1-Chapter_teach'); }
+        // ▶按鈕-1互動測驗區
+        function enterInteractive1() { goToPage('4.2-Chapter_interactive'); }
+        // ▶按鈕-2實境模擬測驗
+        function enterSimulation2() { goToPage('4.3-Chapter_simulation'); }
+    </script>
+
+</body>
+</html>

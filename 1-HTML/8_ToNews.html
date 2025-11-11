@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>新聞案例區-中學生資訊安全網</title>
+    <style>
+        :root{
+        --bg:#fff;
+        --card:#fff;
+        --accent:#0b6efd;
+        --text:#1d2630;
+        --muted:#6b7280;
+        --maxw:1100px;
+        font-family: "Microsoft JhengHei", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+        body {
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+            background:var(--bg);color:var(--text);
+        }
+
+        .BG{
+            /* 背景圖設定 */
+            background-image: url('../0-IMAGE/1_Guide-page/星空背景.gif');
+            background-size: auto;      /* ✅ 保持原始大小 */
+            background-repeat: no-repeat;   /* ✅ 不重複平鋪 */
+            background-position: center;    /* ✅ 圖片置中 */
+            background-attachment: fixed;   /* ✅ 視差效果（可選） */
+            background-color: #000;
+        }
+
+        /* ===== 導覽列 ===== */
+         #header1-container * {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+        }
+
+/* =================== 返回上一頁 ===================== */
+        /* 左上角返回按鈕 */
+        .back-btn {
+            position: fixed;
+            top: 75px;
+            left: 20px;
+            z-index: 2000;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: 2px solid white;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(250, 247, 247, 0.978);
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.05);
+        }
+
+/* =================== AI吉祥物- 彈出視窗 ===================== */
+            #Mrs_XL-1-container{
+                    position: fixed; /* 固定在螢幕頂端 */
+                    z-index: 10000;
+                    font-size: 20px;
+                    box-shadow: 0 3px 12px rgba(255, 255, 255, 0.4);/* 懸浮感陰影 */
+                }
+            /* 視窗預設隱藏 */
+            /* 彈窗淡入淡出 */
+            .ai-popup-content {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 50%;
+                height: 90%;
+                background: rgba(0, 0, 0, 0.8);
+                border-radius: 10px;
+                z-index: 2000;
+                box-shadow: 0 0 15px rgba(255,255,255,0.5);
+
+                /* 動畫效果 */
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+                transition: opacity 0.4s ease, transform 0.4s ease;
+            }
+
+            .ai-popup-content.show {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            .ai-popup-content iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+                border-radius: 10px;
+            }
+            #close-btn {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                background: #ff4d4d;
+                border: none;
+                color: white;
+                font-size: 18px;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+
+            /* 遮罩淡入淡出 */
+            #ai-popup {
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background: rgba(0,0,0,0.6);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 999;
+
+                /* 動畫效果 */
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.4s ease, visibility 0.4s ease;
+            }
+
+            #ai-popup.show {
+                opacity: 1;
+                visibility: visible;
+            }
+/* ===================  ===================== */     
+        .container{margin:0 auto;padding:20px; background-color: #fff5f7;} 
+        section.grid {
+            background-color: #fff5f7; /* 🎨 粉白色背景 */
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* 微陰影 */
+        }
+        h1{margin:0;font-size:1.6rem;text-align: center;}
+        p.lead{margin:6px 0 0;color:var(--muted);text-align: center;}
+        
+
+        /* 影片卡格 */
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:20px}
+        .card{background:var(--bg);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(9,30,66,0.06);overflow:hidden;display:flex;flex-direction:column}
+        .card h2 {
+            font-size: 1rem;
+            margin: 0 0 8px;
+            display: -webkit-box;        /* 必須，用於多行截斷 */
+            -webkit-box-orient: vertical; /* 必須，指定方向 */
+            -webkit-line-clamp: 2;       /* 限制顯示兩行 */
+            overflow: hidden;            /* 隱藏超出的文字 */
+            text-overflow: ellipsis;     /* 超出顯示省略號 */
+        }
+        .meta{font-size:0.9rem;color:var(--muted);margin-bottom:10px}
+
+        /* 讓 iframe 響應式保持 16:9 */
+        .video-wrapper{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;background:#000}
+        .video-wrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+
+        footer{margin:28px 0 60px;color:var(--muted);font-size:0.9rem;text-align:center}
+
+        /* 小螢幕細部 */
+        @media (max-width:420px){
+        header{padding:18px 12px}
+        h1{font-size:1.2rem}
+        }
+    </style>
+    </head>
+<body>
+    <!-- 導覽列 -->
+    <header><div id="header1-container"></div></header>
+    <!-- 固定元素-吉祥物 + AI對話框 -->
+    <div id="Mrs_XL-1-container"></div>
+    <!-- 嵌入colabAI -->
+    <div id="ai-popup">
+        <!-- ✅ 隱藏的彈出視窗(AI對話) -->
+        <div class="ai-popup-content" id="aiPopup">
+            <iframe src="0.11_colabAI.html" frameborder="0"></iframe>
+            <button id="close-btn">✕</button>
+        </div>
+    </div>
+
+    <!-- 返回按鈕 -->
+    <button id="back-btn" class="back-btn" onclick="enterBack()">返回</button>
+
+    <div class="container" style="background-color: rgb(196, 249, 249);">
+      <h1>新聞案例區 - 中學生資訊安全網</h1>
+      <p class="lead">精選資安相關影音教學與案例，適合中學生理解的短片與動畫。</p>
+    </div>
+  </header>
+
+    <main class="container" role="main">
+        <section class="grid" aria-label="影片列表">
+
+            <article class="card">
+                <h2>網路安全1 - 網路安全基本觀念</h2>
+                <div class="meta">來源：YouTube</div>
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/Tj_XEdBTo9s?si=-RwzniOsNMvLvMgl" title="網路安全1 - 網路安全基本觀念" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>駭客大戰 | 網路安全 | 車車 | 動畫 | Kids Cartoon | 安全教育 | 寶寶巴士 BabyBus</h2>
+                <div class="meta">來源：YouTube</div>
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/v3fQ9liD7i8?si=UHg-AG8NVYNNbVkf&amp;start=3" title="駭客大戰 | 網路安全 | 寶寶巴士" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>【動畫新系列】帳號被盜、個資外洩，加上假訊息攻擊！面對資訊戰你該怎麼做？</h2>
+                <div class="meta">來源：YouTube（法務部調查局 X 臺灣吧）</div>
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/Q58EN6PbPXA?si=YaeX4Gm1IPT4muSs" title="帳號被盜、個資外洩" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>手機、電腦被駭也沒什麼大不了？小心刑事警察帶你進牢房！快用四招資安習慣讓駭客退散！</h2>
+                <div class="meta">來源：YouTube（美國在台協會 X 臺灣吧）</div>
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/XaDeuYIQMOs?si=LNopRbupOG5rqnJm" title="手機、電腦被駭也沒什麼大不了？" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>N號房事件—兒少網路安全的重視及司法保護</h2>
+                <div class="meta">來源：YouTube</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/kmc0vpriCo8?si=B4PVgj7nDbi5p0Bc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>馬偕醫院遭勒索病毒攻擊 資安專家進駐</h2>
+                <div class="meta">來源：台視新聞 TTV NEWS(版權問題，前往YOUTUBE查看)</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Jlsz9xm7jlo?si=btDqpCGYpup6lc4r" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>【壽司郎爆重大資安疏失 會員姓名信箱全外洩 Meta廣告漏洞害慘民眾 詐團冒名名人騙千萬劉泰英聲援求償【TVBS新聞精華】20250915</h2>
+                <div class="meta">來源：TVBS新聞(版權問題，前往YOUTUBE查看)</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/zl6izJcO_Io?si=AaxjSVdOq-jW_b_Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>台灣每天受到超過2000萬次網路攻擊，境外假訊息攻擊世界第一多！這場資訊戰怎麼打？｜Taiwan Keywords EP11</h2>
+                <div class="meta">來源：PanSci 泛科學</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/qMHsJGn5tc8?si=1TolZEguwhkfQtJV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>台灣「境外假新聞」蟬聯10年全球榜首！ 為何台灣成為境外假訊息攻擊目標？ 韓國假新聞審查成壓制公民社會黑手？【TODAY 看世界】</h2>
+                <div class="meta">來源：TODAY 看世界</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/HFvhRKxHmeQ?si=gEpCAwu56Qdk8kD_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>10分鐘用AI生成假影片 連專家都被騙倒 如何識別？｜#X分鐘看新聞｜公視P# 新聞實驗室</h2>
+                <div class="meta">來源：公視P# 新聞實驗室</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/J56oMYQ2Heg?si=HiMLaMrOCShc5EBi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>史上最大帳號密碼外洩! 全球160億筆帳密流出 160億筆帳密外洩 蘋果.Google.臉書全中招 最大規模資安漏洞! 全球有160億筆帳密外洩│記者 方昱翔│新聞一把抓20250623│三立新聞台</h2>
+                <div class="meta">來源：三立新聞台</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/RMbKlmAVHm0?si=RuOvIuIh6JdDT_Ez&amp;start=821" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>中國防火牆公司失守 10萬份機密文件外洩｜94要賺錢</h2>
+                <div class="meta">來源：94要賺錢</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/nxvPCud9Jwc?si=lyXxvqa2sKUhLnV5&amp;start=821" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>112資安影片-第1名「凌凌欺：資安風暴」</h2>
+                <div class="meta">來源：資安人蔘</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/tODf6LWojYI?si=9PSCO6orfCU_HtRn&amp;start=821" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>資訊戰中國駭客入侵！台灣資安有問題？找專業的「駭駭看」就知道！feat.DEVCORE 執行長 AllenOwn</h2>
+                <div class="meta">來源：PanSci 泛科學</div>
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/faB2bFoxoX4?si=lrcw2IEdi_JF-b3p&amp;start=821" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </article>
+            
+
+        </section>
+
+        <footer>
+        </footer>
+    </main>
+
+    <!-- --------------------------JS------------------------------- -->
+    <!-- 載入導覽列 -->
+    <script>
+        fetch('./0_Nav-1.html')
+        .then(response => response.text())
+        .then(data => {
+            const header = document.getElementById('header1-container');
+            header.innerHTML = data;
+
+            // 如果載入的 nav 裡有按鈕需要 JS，這裡可以綁定事件
+        })
+        .catch(error => console.error('載入 HTML 失敗:', error));
+    </script>
+
+    <!-- 載入吉祥物 -->
+    <script>
+    // 載入吉祥物
+        fetch('./0.1_Mrs_XL-1.html')
+            .then(res => res.text())
+            .then(html => {
+                const container = document.getElementById('Mrs_XL-1-container');
+                container.innerHTML = html;
+
+                // 執行吉祥物裡的 <script>
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) newScript.src = oldScript.src;
+                    else newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+
+                // 綁定點擊吉祥物事件
+                const mascot = document.getElementById("mascot");
+                const aiPopupContainer = document.getElementById("ai-popup");
+                const aiPopupContent = document.getElementById("aiPopup");
+                const closeBtn = document.getElementById("close-btn");
+
+                if (mascot && aiPopupContainer && aiPopupContent && closeBtn) {
+                    mascot.addEventListener("click", () => {
+                        aiPopupContainer.classList.add("show");
+                        aiPopupContent.classList.add("show");
+                    });
+
+                    function closePopup() {
+                        // 移除 show class 觸發淡出
+                        aiPopupContent.classList.remove("show");
+                        aiPopupContainer.classList.remove("show");
+                    }
+
+                    closeBtn.addEventListener("click", closePopup);
+
+                    // 點遮罩也關閉
+                    aiPopupContainer.addEventListener("click", e => {
+                        if (e.target === e.currentTarget) {
+                            closePopup();
+                        }
+                    });
+                }
+            });
+    </script>
+  
+    <!-- 轉跳頁面 -->
+    <script>
+        // ▶返回按鈕
+        function enterBack() {
+            // 若有上一頁就返回
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // 若沒有上一頁（例如使用者直接進入此頁）
+                window.location.href = '1_Guide-page.html'; 
+            }
+        }
+    </script>
+</body>
+</html>
