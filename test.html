@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>寫入 Google 試算表</title>
+</head>
+<body>
+
+<h2>資料提交表單</h2>
+<form id="myForm">
+  姓名：<input type="text" name="name" required><br><br>
+  Email：<input type="email" name="email" required><br><br>
+  訊息：<textarea name="message" required></textarea><br><br>
+  <button type="submit">提交</button>
+</form>
+
+<script>
+const form = document.getElementById('myForm');
+const webAppUrl = "https://script.google.com/macros/s/AKfycby09so-dWEOP8YI84HaDhbpQUsqj1foBEG5rppxFJJqQ8ct6OMbC76_Gh_xhyC4kM7CAA/exec"; // 替換成 Apps Script URL
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  
+  const data = {
+    name: form.name.value,
+    email: form.email.value,
+    message: form.message.value
+  };
+  
+  fetch(webAppUrl, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(res => {
+    if(res.status === 'success') alert('資料已成功寫入試算表！');
+    else alert('發生錯誤：' + res.message);
+  })
+  .catch(err => alert('網路錯誤：' + err));
+});
+</script>
+
+</body>
+</html>
