@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>響應式導覽列</title>
+<style>
+/* 基礎設定 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+section {
+    width: 100%;
+    background: linear-gradient(to right, #191818, #454545);
+}
+
+/* 導覽列 */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 60px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);/* 懸浮感陰影 */
+}
+
+/* LOGO */
+.nav .logo img {
+    width: 200px;
+    height: auto;
+    display: block;
+    border-radius: 16px;
+    margin-left: 30px;
+}
+
+/* 導覽選單 */
+.nav ul {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    list-style: none;
+    transition: max-height 0.3s ease;
+}
+
+.nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 14px;
+    padding: 5px 0;
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+.nav ul li a:hover {
+    border-bottom: 1px solid #fff;
+}
+
+/* 按鈕 */
+.nav .btn {
+    padding: 10px 20px;
+    border: 1px solid #464646;
+    border-radius: 25px;
+    transition: all 0.3s;
+}
+
+.nav .btn:hover {
+    border-color: #f7b1b1;
+    background-color: #f7b1b1;
+    color: #fff;
+}
+
+.nav .btn-head img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.nav .btn-head img:hover {
+    border: 1px solid #f7b1b1;
+}
+
+/* 漢堡選單 */
+.menu-toggle {
+    display: none;
+    font-size: 28px;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* 響應式 - 平板 */
+@media (max-width: 1024px) {
+    .nav ul li a {
+        font-size: 13px;
+    }
+}
+
+/* 響應式 - 手機 */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav ul {
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background: #3a1c2d;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .nav.active ul {
+        max-height: 500px; /* 足夠容納所有選單 */
+    }
+
+    .nav ul li {
+        width: 100%;
+        padding: 10px 20px;
+    }
+
+    .nav ul li a {
+        width: 100%;
+        font-size: 14px;
+    }
+}
+
+/* 超小螢幕 */
+@media (max-width: 480px) {
+    .nav ul li a {
+        font-size: 12px;
+    }
+
+    .nav .logo img {
+        width: 120px;
+    }
+}
+</style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="logo">
+            <a href="../1-HTML/index.html"><img id="logo" src="../0-IMAGE/0_Nav/logoA.png" alt="網站LOGO"></a>
+        </div>
+
+        <div class="menu-toggle">☰</div>
+
+        <ul>
+            <li><a href="2-Game-home.html">遊戲主頁</a></li>
+            <li><a href="3-Game-List-Chapter.html">章節總覽</a></li>
+            <li><a href="5_ToStudy.html">學習區</a></li>
+            <li><a href="6_ToTest.html">單選測驗</a></li>
+            <li><a href="7_ToStory.html">情境測驗</a></li>
+            <li><a href="8_ToNews.html">新聞案例</a></li>
+            <li><a href="#" class="btn">關於我們</a></li>
+            <li class="btn-head"><img src="../0-IMAGE/0_Nav/logoB.png" alt="個人設置"></li>
+        </ul>
+    </nav>
+
+    <script>
+        // 漢堡選單切換
+        const menuToggle = document.querySelector('.menu-toggle');
+        const nav = document.querySelector('.nav');
+
+        menuToggle.addEventListener('click', () => {
+            nav.classList.toggle('active');
+        });
+
+        // Logo 切換
+        function updateLogo() {
+            const logo = document.getElementById('logo');
+            if (window.innerWidth <= 768) {
+                logo.src = '../0-IMAGE/0導覽列Nav/logoB.png';
+            } else {
+                logo.src = '../0-IMAGE/0導覽列Nav/logoA.png';
+            }
+        }
+
+        window.addEventListener('resize', updateLogo);
+        window.addEventListener('DOMContentLoaded', updateLogo);
+    </script>
+</body>
+</html>

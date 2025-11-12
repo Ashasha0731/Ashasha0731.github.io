@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>互動測驗</title>
+<link rel="icon" type="image/png" href="../0-IMAGE/0_Nav/logo-遊戲廳.png">    <!-- 網站圖標設定 -->
+<style>
+    body {
+        font-family: "微軟正黑體", sans-serif;
+        background: #0a0a0a;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px;
+    }
+    .quiz-container {
+        max-width: 700px;
+        width: 100%;
+        background: #111;
+        padding: 20px 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+    h1 { text-align: center; margin-bottom: 20px; }
+    .question { margin-bottom: 20px; }
+    .question h3 { margin-bottom: 10px; }
+    .options label {
+        display: block;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+    input[type="radio"] { margin-right: 10px; }
+    input[type="text"] { width: 100%; padding: 8px; border-radius: 8px; border: none; }
+    button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 12px;
+        background: #1a73e8;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    button:hover { background: #1664c1; }
+    .results { display: none; margin-top: 20px; background: #222; padding: 15px; border-radius: 15px; }
+    .correct { color: #4caf50; }
+    .wrong { color: #f44336; }
+    .next-btn { display: none; margin-top: 15px; }
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>章節測驗</h1>
+
+    <!-- 單選題 1 -->
+    <div class="question" data-answer="c">
+        <h3>1. 系統安全的目的是什麼？</h3>
+        <div class="options">
+            <label><input type="radio" name="q1" value="a"> 讓電腦變快</label>
+            <label><input type="radio" name="q1" value="b"> 讓程式可以自由下載</label>
+            <label><input type="radio" name="q1" value="c"> 保護電腦不被入侵</label>
+        </div>
+    </div>
+
+    <!-- 單選題 2 -->
+    <div class="question" data-answer="b">
+        <h3>2. 哪一個是「電腦壞東西」的正確比喻？</h3>
+        <div class="options">
+            <label><input type="radio" name="q2" value="a"> 病毒像氣球</label>
+            <label><input type="radio" name="q2" value="b"> 木馬像假裝是好人的壞人</label>
+            <label><input type="radio" name="q2" value="c"> 間諜程式會讓電腦變快</label>
+        </div>
+    </div>
+
+    <!-- 單選題 3 -->
+    <div class="question" data-answer="c">
+        <h3>3. 下列哪一個是正確的電腦保護行為？</h3>
+        <div class="options">
+            <label><input type="radio" name="q3" value="a"> 密碼用 123456</label>
+            <label><input type="radio" name="q3" value="b"> 點陌生人連結</label>
+            <label><input type="radio" name="q3" value="c"> 定期更新電腦系統</label>
+        </div>
+    </div>
+
+    <!-- 問答題 -->
+    <div class="question">
+        <h3>"問答題" 4. 你覺得什麼樣的密碼是安全的？請設計一組安全密碼範例並說明為什麼。</h3>
+        <input type="text" id="open-answer" placeholder="請輸入答案">
+    </div>
+
+    <button id="submit-btn">提交測驗</button>
+
+    <div class="results" id="results"></div>
+    <button class="next-btn" id="next-btn">前往下一關</button>
+</div>
+
+<script>
+const submitBtn = document.getElementById("submit-btn");
+const resultsDiv = document.getElementById("results");
+const nextBtn = document.getElementById("next-btn");
+
+submitBtn.addEventListener("click", () => {
+    let score = 0;
+    const questions = document.querySelectorAll(".question[data-answer]");
+
+    questions.forEach((q, i) => {
+        const selected = q.querySelector('input[type="radio"]:checked');
+        const correct = q.getAttribute("data-answer");
+        if(selected && selected.value === correct) {
+            score++;
+        }
+    });
+
+    // 顯示分數與正確答案
+    let resultsHTML = `<h3>測驗結果：</h3>`;
+    resultsHTML += `<p>單選題得分： ${score} / ${questions.length}</p>`;
+    questions.forEach((q, i) => {
+        const correct = q.getAttribute("data-answer");
+        resultsHTML += `<p>第 ${i+1} 題正確答案： <span class="correct">${correct}</span></p>`;
+    });
+    resultsDiv.innerHTML = resultsHTML;
+    resultsDiv.style.display = "block";
+
+    // 送出問答題資料（console模擬，可改成fetch送到伺服器）
+    const openAnswer = document.getElementById("open-answer").value;
+    console.log("問答題答案:", openAnswer);
+
+    // 如果單選題全對
+    if(score === questions.length){
+        alert("恭喜！全對，解鎖下一關！");
+        nextBtn.style.display = "block"; // 顯示下一關按鈕
+    } else {
+        alert("單選題未全對，請重新作答！");
+        nextBtn.style.display = "none";
+    }
+});
+
+// 跳轉下一頁
+nextBtn.addEventListener("click", () => {
+    window.location.href = "4.3-Chapter_simulation.html";
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吉祥物互動-前往AI</title>
+    <style>
+        /* ========= 吉祥物容器 ========= */
+        .mascot {
+            position: fixed;
+            top: 70px;
+            right: -150px;
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        /* ========= AI文字 ========= */
+        .mascot-text-Ai {
+            position: absolute;
+            bottom: 40px;       /* 根據吉祥物調整 */
+            left: 25%;          /* 以吉祥物中心為基準 */
+            transform: translateX(-50%);
+            font-size: 36px;
+            color: #fff;
+            -webkit-text-stroke: 2px #000;
+            text-align: center;
+            z-index: 101;
+            white-space: nowrap;
+
+            /* 字形更換 */
+            font-family: "微軟正黑體", "Microsoft JhengHei", Arial, sans-serif;
+
+            /* ✅ 加入彈跳動畫 */
+            animation: bounce 3s ease-in-out infinite;
+        }
+
+        /* ========= 吉祥物圖片 ========= */
+        .XL-img {
+            width: 300px;
+        }
+
+        /* 圖片-滑鼠移上：放大+旋轉+搖擺 */
+        .mascot .XL-img {
+            transform: translateX(-50%) scale(1.2) rotate(-2deg);
+            animation: bounce 1.8s ease-in-out infinite;
+        }
+
+        /* 文字-滑鼠移上：放大+旋轉+搖擺 */
+        .mascot .mascot-text-Ai{
+            transform: translateX(-50%) scale(1.2) rotate(-2deg);
+            animation: bounce 1.8s ease-in-out infinite, wave 2s ease-in-out infinite;
+        }
+
+        /* ========= 對話框 ========= */
+        .speech-bubble {
+            position: absolute;
+            bottom: 150px;  /* 根據吉祥物高度可調 */
+            right: 300px;   /* 對話框水平位置 */
+            background-color: #ffffff;
+            color: #000000;
+            border-radius: 20px;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+            white-space: nowrap;
+        }
+
+        /* 對話框尾巴（右下凸出） */
+        .speech-bubble::after {
+            content: "";
+            position: absolute;
+            bottom: -14px;       
+            right: 40px;         
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: #fff; 
+            transform: rotate(340deg); 
+        }
+
+        /* 滑鼠 hover 顯示對話框 */ 
+        .mascot:hover .speech-bubble { 
+            opacity: 1; transform: translateY(0); 
+        }
+
+        /* ========= 動畫定義 ========= */
+        @keyframes bounce {     /*圖片晃*/
+            0%, 100% { transform: translateY(0); }
+            20% { transform: translateY(-5px); }
+            40% { transform: translateY(0); }
+            60% { transform: translateY(-1px); }
+            80% { transform: translateY(0); }
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(-3deg); }
+            75% { transform: rotate(2deg); }
+        }
+
+        /* --- 手機 (寬度 ≤ 768px) --- */
+        @media (max-width: 768px) {
+            .XL-img {width: 250px;}
+            .speech-bubble {
+                bottom: 110px;  /* 根據吉祥物高度可調 */
+                right: 250px;   /* 對話框水平位置 */
+            }
+        }
+
+        /* --- 小手機 (寬度 ≤ 480px) --- */
+        @media (max-width: 480px) {
+             
+        }
+    </style>
+</head>
+
+<body style="background-color: #000;">
+    <!-- 吉祥物 -->
+    <div class="mascot">
+        <img class="XL-img" id="mascot-img" src="../0-IMAGE/XL_img/XL_GoHi.png" alt="芯樂吉祥物" data-state="normal">
+        <div class="speech-bubble" id="bubble">嗨~ 有什麼問題都可以問我喔!</div>
+        <h2 class="mascot-text-Ai">AI</h2>
+    </div>
+
+
+
+
+    
+<!---------------------------- JS ------------------------------>
+    <script>
+        const mascotImg = document.getElementById("mascot-img");
+        const bubble = document.getElementById("bubble");
+
+        const normalText = "嗨~ 有什麼問題都可以問我喔!";
+        const talkText   = "我們一起守護資安吧！🥰";
+
+
+        mascotImg.addEventListener("click", () => {
+            if (mascotImg.dataset.state === "normal") {
+                // 顯示對話框並改文字
+                bubble.textContent = talkText;
+                bubble.style.opacity = "1";
+                bubble.style.transform = "translateX(-10%) translateY(0)";
+
+                mascotImg.dataset.state = "talk";
+
+                // 5秒後自動回復
+                setTimeout(() => {
+                    bubble.textContent = normalText;
+                    bubble.style.opacity = "0";
+                    bubble.style.transform = "translateX(0) translateY(10px)";
+                    // 等 CSS transition 結束再恢復文字
+                    setTimeout(() => {
+                        bubble.textContent = normalText;
+                        mascotImg.dataset.state = "normal";
+                    }, 300); // 這裡的 300ms 對應 CSS transition
+                }, 2000); // 5 秒保持顯示
+            } 
+        });
+    </script>
+
+</body>
+</html>

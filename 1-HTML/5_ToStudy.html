@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- GOOGLE圖標引用Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <title>學習區 - 中學生資訊安全網</title>
+    <link rel="icon" type="image/png" href="../0-IMAGE/0_Nav/logo-small-bg.png">    <!-- 網站圖標設定 -->
+    <style>
+        body {
+            background-color: #222;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .BG{
+            /* 背景圖設定 */
+            background-image: url('../0-IMAGE/1_Guide-page/星空背景.gif');
+            background-size: auto;      /* ✅ 保持原始大小 */
+            background-repeat: no-repeat;   /* ✅ 不重複平鋪 */
+            background-position: center;    /* ✅ 圖片置中 */
+            background-attachment: fixed;   /* ✅ 視差效果（可選） */
+            background-color: #000;
+        }
+
+        /* ===== 導覽列 ===== */
+         #header1-container * {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+        }
+
+/* =================== 返回上一頁 ===================== */
+        /* 左上角返回按鈕 */
+        .back-btn {
+            position: fixed;
+            top: 75px;
+            left: 20px;
+            z-index: 2000;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: 2px solid white;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(250, 247, 247, 0.978);
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.05);
+        }
+        
+        /* 切換按鈕 */
+        .tab-container {
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+            padding: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: -10px;
+        }
+
+        .tab-btn {
+            padding: 15px 60px;
+            border: none;
+            border-radius: 25px 25px 0 0;
+            cursor: pointer;
+            background-color: #d0e1e5;
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+
+        .tab-btn.active {
+            background-color: #8aa6c1;
+            color: #fff;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background-color: #b8d0de;
+        }
+
+        .tab-content {
+            position: relative;
+            background-color: #8aa6c1;
+            border-radius: 0px 10px 10px 10px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* 缺角的偽元素 */
+        /* 給簡報區按鈕加補丁 */
+        .tab-btn[data-target="pdf-section"] {
+            position: relative; /* 必須讓偽元素相對定位 */
+        }
+
+        .tab-btn[data-target="pdf-section"]::before {
+            content: '';
+            position: absolute;
+            top: 26px;   /* 調整補丁位置 */
+            left: 0px;
+            width: 30px; /* 圓形大小 */
+            height: 40px;
+            background-color: #d0e1e5; /* 淺藍色 */
+            border-radius: 0;         /* 正ㄋ方形補丁 */
+            z-index: -10;
+            display: block;              /* 初始隱藏 */
+        }
+
+        /* 當簡報區按鈕為 active 時顯示補丁 */
+        .tab-btn.active[data-target="pdf-section"]::before {
+            display: none;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel:first-child {
+            display: block;
+        }
+
+        h2 {
+            text-align: center;
+            color: #fcfcfc;
+        }
+
+        .chapter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, auto)); /* 改 max 為 auto */
+            gap: 25px;
+            justify-content: center; /* 大螢幕整體置中 */
+        }
+
+
+        .chapter-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            width: 350px;
+            height: 250px;
+            overflow: hidden;
+            position: relative; /* 新增，讓內部絕對定位的按鈕以卡片為參考 */
+            transition: transform 0.3s;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .chapter-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .chapter-content {
+            padding-left: 30px;
+            padding-right: 35px;
+            line-height: 1em;
+        }
+
+        .chapter-title {
+            font-size: 1em;
+            color: #0066cc;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid #ffffff;   /* 淡藍框線 */
+            border-radius: 10px 10px 0px 0px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 如果文字太長會自動換行 */
+        .chapter-desc {
+            color: #444;
+            flex: 1;
+            font-size: 0.6em;
+            
+        }
+
+        .pdf-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pdf-links li {
+            margin: 6px 0;
+        }
+
+        .pdf-links a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .pdf-links a:hover {
+            text-decoration: underline;
+        }
+
+        .download-btn {
+            position: absolute;
+            bottom: 10px; /* 右下角 */
+            right: 10px;
+            background-color: #d5ffff;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 15%;
+            width: 35px;
+            height: 35px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background-color 0.3s;
+            text-decoration: none; /* 取消底線 */
+        }
+
+        .download-btn:hover {
+            background-color: #bfe3ff;
+            transform: scale(1.1);
+        }
+
+        /* YouTube 區塊樣式 */
+        .video-section {
+            text-align: center;
+        }
+
+        .video-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, auto)); /* 改 max 為 auto */
+            gap: 20px;
+            justify-content: center; /* 大螢幕整體置中 */
+        }
+
+        .video-card {
+            background-color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 10px;
+            width: 360px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 200px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        .video-title {
+            margin-top: 8px;
+            font-size: 1em;
+            color: #444;
+        }
+
+        /* ====== AI吉祥物- 彈出視窗 ====== */
+        /* ====== 彈出視窗內容 ====== */
+            #Mrs_XL-1-container{
+                    position: fixed; /* 固定在螢幕頂端 */
+                    z-index: 10000;
+                    font-size: 20px;
+                    box-shadow: 0 3px 12px rgba(255, 255, 255, 0.4);/* 懸浮感陰影 */
+                }
+            /* 視窗預設隱藏 */
+            /* 彈窗淡入淡出 */
+            .ai-popup-content {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 50%;
+                height: 90%;
+                background: rgba(0, 0, 0, 0.8);
+                border-radius: 10px;
+                z-index: 2000;
+                box-shadow: 0 0 15px rgba(255,255,255,0.5);
+
+                /* 動畫效果 */
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+                transition: opacity 0.4s ease, transform 0.4s ease;
+            }
+
+            .ai-popup-content.show {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            .ai-popup-content iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+                border-radius: 10px;
+            }
+            #close-btn {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                background: #ff4d4d;
+                border: none;
+                color: white;
+                font-size: 18px;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+
+            /* 遮罩淡入淡出 */
+            #ai-popup {
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background: rgba(0,0,0,0.6);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 999;
+
+                /* 動畫效果 */
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.4s ease, visibility 0.4s ease;
+            }
+
+            #ai-popup.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            /* ====== 載入中提示框 ====== */
+            #loading-overlay {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 150px;
+                height: 100px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                font-size: 1em;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 8px;
+                z-index: 9999;
+                visibility: hidden;
+                opacity: 0;
+                transform: translate(-50%, -50%);
+                transition: opacity 0.4s ease, visibility 0.4s ease;
+            }
+
+            /* 顯示狀態 */
+            #loading-overlay.show {
+                visibility: visible;
+                opacity: 1;
+            }
+
+            /* 關閉按鈕樣式 */
+            #loading-overlay button {
+                position: absolute;
+                top: 4px;
+                right: 6px;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.2em;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            }
+
+            #loading-overlay button:hover {
+                transform: scale(1.2);
+            }
+    </style>
+</head>
+<body class="BG">
+    <!-- 導覽列 -->
+    <header><div id="header1-container"></div></header>
+    <!-- 固定元素-吉祥物 + AI對話框 -->
+    <div id="Mrs_XL-1-container"></div>
+    <!-- 嵌入colabAI -->
+    <div id="ai-popup">
+        <!-- ✅ 隱藏的彈出視窗(AI對話) -->
+        <div class="ai-popup-content" id="aiPopup">
+            <iframe src="0.11_colabAI.html" frameborder="0"></iframe>
+            <button id="close-btn">✕</button>
+        </div>
+    </div>
+
+    <!-- 返回按鈕 -->
+    <button id="back-btn" class="back-btn" onclick="enterBack()">返回</button>
+
+    <!-- 切換按鈕 -->
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" data-target="pdf-section">&nbsp;&nbsp;簡報區(13章)</button>
+            <button class="tab-btn " data-target="video-section" style="margin-left: -20px;">&nbsp;&nbsp;影片區(13章)</button>
+        </div>
+
+        <!-- 簡報區（原本章節卡片） -->
+        <div class="tab-content">
+            <!-- 簡報區 -->
+            <div id="pdf-section" class="tab-panel">
+                <h2>教學簡報</h2> <!-- ======= 章節卡片（M1–M13） ======= -->
+                <div class="chapter-grid">
+                    <!-- M1 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第一章 系統安全是什麼？</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch1.png" alt="M1">
+                        <a href="pdfs/M1.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">電腦就像你的房間：要有鎖（密碼）、要常打掃（更新）、不要讓陌生人亂開門（權限）。系統安全就是保護你的「數位房間」。</div>
+                        </div>
+                    </div>
+
+                    <!-- M2 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第二章 APT攻擊與網路攻擊鏈</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch2.png" alt="M2">
+                        <a href="pdfs/M2.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">進階持續性滲透（APT）就像電影裡的間諜：不是一次進來就走，而是悄悄待在裡面、慢慢取得信任與資料。</div>
+                        </div>
+                    </div>
+
+                    <!-- M3 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第三章 防火牆與封包檢查</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch3.png" alt="M3">
+                        <a href="pdfs/M3.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">防火牆像學校的門禁與值日生，決定誰可以進出；封包檢查則是檢查「信件」內容是否安全。</div>
+                        </div>
+                    </div>
+
+                    <!-- M4 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第四章 網站會被駭嗎？</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch4.png" alt="M4">
+                        <a href="pdfs/M4.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">   
+                            <div class="chapter-desc">簡單的密碼就像用透明膠帶當門鎖，容易被撬開；網站也會有被攻擊的風險，要學會找出弱點並加強門鎖。</div>
+                        </div>
+                    </div>
+
+                    <!-- M5 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第五章 檔案誰可以看？</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch5.png" alt="M5">
+                        <a href="pdfs/M5.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">存取權限就像寫日記給特定朋友看：寫上「只有媽媽能看」或「朋友可以留言」。權限要設定正確，才不會被不該看的人看到。</div>
+                        </div>
+                    </div>
+
+                    <!-- M6 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第六章 找出可疑的電腦行為</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch6.png" alt="M6">
+                        <a href="pdfs/M6.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">用 netstat 看電腦的「血管」，可以看到哪些連線在動；異常連線就像陌生人在你房間附近徘徊。</div>
+                        </div>
+                    </div>
+
+                    <!-- M7 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第七章 誰動了我的檔案？</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch7.png" alt="M7">
+                        <a href="pdfs/M7.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">稽核日誌像監視器錄影，可以回放誰進來過、做過什麼操作，幫助找出有問題的人或時間。</div>
+                        </div>
+                    </div>
+
+                    <!-- M8 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第八章 漏洞與密碼怎麼管？</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch8.png" alt="M8">
+                        <a href="pdfs/M8.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">漏洞就像沒關緊的窗戶或門縫，會被人鑽空子；密碼管理像是把鑰匙放在哪裡，放錯地方就容易丟失或被偷。</div>
+                        </div>
+                    </div>
+
+                    <!-- M9 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第九章 通行密碼攻擊</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch9.png" alt="M9">
+                        <a href="pdfs/M9.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">Hash 像門禁卡的序號：不會直接顯示原本密碼，但能用來比對是否正確；若傳輸不安全，駭客可能截取或冒用。</div>
+                        </div>
+                    </div>
+
+                    <!-- M10 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第十章 檔案怎麼保護？</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch10.png" alt="M10">
+                        <a href="pdfs/M10.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">`chmod、ACL、雲端分享設定就像設定誰能看到你的相簿或誰能編輯文件：設定錯會讓不該看的人看到或改你的東西。</div>
+                        </div>
+                    </div>
+
+                    <!-- M11 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第十一章 機器學習入門</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch11.png" alt="M11">
+                        <a href="pdfs/M11.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">機器學習就像教一台機器分辨蘋果和香蕉：你給它很多範例，它會慢慢學會自己判類別，變成「數位小幫手」。</div>
+                        </div>
+                    </div>
+
+                    <!-- M12 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第十二章 AI 幫忙抓駭客</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch12.png" alt="M12">
+                        <a href="pdfs/M12.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">   
+                            <div class="chapter-desc">AI 可以幫資安人員像超級保全機器人一樣檢查大量資料、找出異常，但它也會有誤判，要人來監督。</div>
+                        </div>
+                    </div>
+
+                    <!-- M13 -->
+                    <div class="chapter-card">
+                        <div class="chapter-title">第十三章 IDS & IPS 差在哪？</div>
+                        <img src="../0-IMAGE/Chapter_IMG/ch13.png" alt="M13">
+                        <a href="pdfs/M13.pdf" download class="download-btn" title="下載 PDF"><span class="material-symbols-outlined">download</span></a>
+                        <div class="chapter-content">
+                            <div class="chapter-desc">IDS 像監視器會「告訴你發生了什麼」，IPS 則像值勤警衛會「直接制止」不對的行為；兩者常配合使用。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loading-overlay">
+                <button id="close-loading">✕</button>
+                <p>載入中...</p>
+            </div>
+            
+            <!-- YouTube 影片區 -->
+            <div id="video-section" class="tab-panel" >
+                <h2>YouTube 教學影片</h2>
+                <div class="video-grid">
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/722_zI7m-5E" allowfullscreen></iframe><div class="video-title">第一章 系統安全是什麼？</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/Ypoyr30515o" allowfullscreen></iframe><div class="video-title">第二章 APT攻擊與網路攻擊鏈</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/tXPjJUz-IEI" allowfullscreen></iframe><div class="video-title">第三章 防火牆與封包檢查</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/UJJc8XMpIYI" allowfullscreen></iframe><div class="video-title">第四章 網站會被駭嗎？</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/J2ZdJzHYiKw" allowfullscreen></iframe><div class="video-title">第五章 檔案誰可以看？</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/4gtTDufMfK0" allowfullscreen></iframe><div class="video-title">第六章 找出可疑的電腦行為</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/xadhZSFR1Q0" allowfullscreen></iframe><div class="video-title">第七章 誰動了我的檔案？</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/Djr5OQbvS80" allowfullscreen></iframe><div class="video-title">第八章 漏洞與密碼怎麼管？</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/hfEW8srJdtw" allowfullscreen></iframe><div class="video-title">第九章 密碼怎麼傳？駭客怎麼偷</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/CYKzBAuwRnA" allowfullscreen></iframe><div class="video-title">第十章 檔案怎麼保護？</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/HC2an2fB5yw" allowfullscreen></iframe><div class="video-title">第十一章 機器學習入門</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/NK510NyEOPY" allowfullscreen></iframe><div class="video-title">第十二章 AI 幫忙抓駭客</div></div>
+                    <div class="video-card"><iframe src="https://www.youtube.com/embed/TSyegK2lQ2s" allowfullscreen></iframe><div class="video-title">第十三章 IDS & IPS 差在哪？</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- --------------------------JS------------------------------- -->
+    <!-- 載入導覽列 -->
+    <script>
+        fetch('./0_Nav-1.html')
+        .then(response => response.text())
+        .then(data => {
+            const header = document.getElementById('header1-container');
+            header.innerHTML = data;
+
+            // 如果載入的 nav 裡有按鈕需要 JS，這裡可以綁定事件
+        })
+        .catch(error => console.error('載入 HTML 失敗:', error));
+    </script>
+
+    <!-- 載入吉祥物 -->
+    <script>
+    // 載入吉祥物
+        fetch('./0.1_Mrs_XL-1.html')
+            .then(res => res.text())
+            .then(html => {
+                const container = document.getElementById('Mrs_XL-1-container');
+                container.innerHTML = html;
+
+                // 執行吉祥物裡的 <script>
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) newScript.src = oldScript.src;
+                    else newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+
+                // 綁定點擊吉祥物事件
+                const mascot = document.getElementById("mascot");
+                const aiPopupContainer = document.getElementById("ai-popup");
+                const aiPopupContent = document.getElementById("aiPopup");
+                const closeBtn = document.getElementById("close-btn");
+
+                if (mascot && aiPopupContainer && aiPopupContent && closeBtn) {
+                    mascot.addEventListener("click", () => {
+                        aiPopupContainer.classList.add("show");
+                        aiPopupContent.classList.add("show");
+                    });
+
+                    function closePopup() {
+                        // 移除 show class 觸發淡出
+                        aiPopupContent.classList.remove("show");
+                        aiPopupContainer.classList.remove("show");
+                    }
+
+                    closeBtn.addEventListener("click", closePopup);
+
+                    // 點遮罩也關閉
+                    aiPopupContainer.addEventListener("click", e => {
+                        if (e.target === e.currentTarget) {
+                            closePopup();
+                        }
+                    });
+                }
+            });
+    </script>
+
+
+    <!-- 切換簡報/影片區塊顯示 -->
+    <script>
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+        const tabContent = document.querySelector('.tab-content'); // 保留對 tabContent 的引用
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除所有按鈕的 active
+                tabBtns.forEach(b => b.classList.remove('active'));
+                // 讓點擊的按鈕變 active
+                btn.classList.add('active');
+
+                const target = btn.dataset.target;
+
+                // 顯示對應面板panel，隱藏其他 panel
+                tabPanels.forEach(panel => {
+                    panel.style.display = (panel.id === target) ? 'block' : 'none';
+                });
+
+                if(target === 'video-section'){
+                    tabContent.style.borderRadius = '10px 10px 10px 10px';
+                    // === 若切換到影片區，顯示載入提示 ===
+                    loadingOverlay.classList.add('show');
+                    const iframes = document.querySelectorAll('#video-section iframe');
+                    let loadedCount = 0;
+                    const total = iframes.length;
+
+                    iframes.forEach(iframe => {
+                        // 已載入過的 iframe 不重算
+                        if (iframe.dataset.loaded === "true") {
+                            loadedCount++;
+                            if (loadedCount === total) {
+                                loadingOverlay.classList.remove('show');
+                            }
+                            return;
+                        }
+
+                        iframe.addEventListener('load', () => {
+                            iframe.dataset.loaded = "true";
+                            loadedCount++;
+                            if (loadedCount === total) {
+                                loadingOverlay.classList.remove('show');
+                            }
+                        });
+                    });
+                    // 關閉提示框
+                    document.getElementById('close-loading').addEventListener('click', () => {
+                        document.getElementById('loading-overlay').classList.remove('show');
+                    });
+                } else { // pdf-section
+                    tabContent.style.borderRadius = '0 10px 10px 10px';
+                }
+
+                // 左上角補丁由 CSS 控制，不再操作 tabContent
+            });
+        });
+    </script>
+
+    <!-- 轉跳頁面 -->
+    <script>
+        // ▶返回按鈕
+        function enterBack() {
+            // 若有上一頁就返回
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // 若沒有上一頁（例如使用者直接進入此頁）
+                window.location.href = 'index.html'; 
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>測驗題-中學生資訊安全網</title>
+    <style>
+        body {
+        font-family: "Microsoft JhengHei", sans-serif;
+        margin: 0;
+        padding: 20px;
+        }
+
+        .BG{
+            /* 背景圖設定 */
+            background-image: url('../0-IMAGE/1_Guide-page/星空背景.gif');
+            background-size: auto;      /* ✅ 保持原始大小 */
+            background-repeat: no-repeat;   /* ✅ 不重複平鋪 */
+            background-position: center;    /* ✅ 圖片置中 */
+            background-attachment: fixed;   /* ✅ 視差效果（可選） */
+            background-color: #000;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .chapter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .chapter-item {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 10px 15px;
+            transition: 0.2s;
+            border: 2px solid transparent;   /* ✅ 預留邊框空間（透明） */
+        }
+
+
+        .chapter-item:hover {
+        transform: scale(1.02);
+        }
+
+        /* ✅ 被選中的章節外框效果 */
+        .chapter-item.selected {
+            border: 4px solid #00ec76;       /* ✅ 綠色框線 */
+            transition: 0.2s;
+        }
+
+        .chapter-img {
+            width: 150px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .chapter-info {
+            flex: 1;
+        }
+
+        .chapter-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #1d2630;
+        }
+
+        .chapter-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .chapter-check {
+            width: 20px;
+            height: 20px;
+            transform: scale(1.4);
+            margin-left: 10px;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-start {
+            background: #0b6efd;
+            color: white;
+            font-size: 1.1rem;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-start:hover {
+            background: #095cd1;
+        }
+    </style>
+    </head>
+    <body class="BG">
+
+        <h1>章節測驗列表-單選題</h1>
+        <div class="chapter-list" id="chapterList"></div>
+
+        <div class="btn-container">
+            <button class="btn-start" onclick="startTest()">開始測驗</button>
+        </div>
+
+    <script>
+        // 假設的章節資料 (13章)
+        const chapters = [
+            { 
+                title: "第一章", 
+                subtitle: "系統安全是什麼？", 
+                desc: "電腦就像你的房間：要有鎖（密碼）、要常打掃（更新）、不要讓陌生人亂開門（權限）。系統安全就是保護你的「數位房間」。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch1.png" 
+            },{ 
+                title: "第二章", 
+                subtitle: "APT攻擊與網路攻擊鏈", 
+                desc: "進階持續性滲透（APT）就像電影裡的間諜：不是一次進來就走，而是悄悄待在裡面、慢慢取得信任與資料。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch2.png" 
+            },{ 
+                title: "第三章", 
+                subtitle: "防火牆與封包檢查", 
+                desc: "防火牆像學校的門禁與值日生，決定誰可以進出；封包檢查則是檢查「信件」內容是否安全。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch3.png" 
+            },{ 
+                title: "第四章", 
+                subtitle: "網站會被駭嗎？", 
+                desc: "簡單的密碼就像用透明膠帶當門鎖，容易被撬開；網站也會有被攻擊的風險，要學會找出弱點並加強門鎖。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch4.png" 
+            },{ 
+                title: "第五章", 
+                subtitle: "檔案誰可以看？", 
+                desc: "存取權限就像寫日記給特定朋友看：寫上「只有媽媽能看」或「朋友可以留言」。權限要設定正確，才不會被不該看的人看到。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch5.png" 
+            },{ 
+                title: "第六章", 
+                subtitle: "找出可疑的電腦行為", 
+                desc: "用 netstat 看電腦的「血管」，可以看到哪些連線在動；異常連線就像陌生人在你房間附近徘徊。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch6.png" 
+            },{ 
+                title: "第七章", 
+                subtitle: "誰動了我的檔案？", 
+                desc: "稽核日誌像監視器錄影，可以回放誰進來過、做過什麼操作，幫助找出有問題的人或時間。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch7.png" 
+            },{ 
+                title: "第八章", 
+                subtitle: "漏洞與密碼怎麼管？", 
+                desc: "漏洞就像沒關緊的窗戶或門縫，會被人鑽空子；密碼管理像是把鑰匙放在哪裡，放錯地方就容易丟失或被偷。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch8.png" 
+            },{ 
+                title: "第九章", 
+                subtitle: "密碼怎麼傳？駭客怎麼偷", 
+                desc: "Hash 像門禁卡的序號：不會直接顯示原本密碼，但能用來比對是否正確；若傳輸不安全，駭客可能截取或冒用。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch9.png" 
+            },{ 
+                title: "第十章", 
+                subtitle: "檔案怎麼保護？", 
+                desc: "chmod、ACL、雲端分享設定就像設定誰能看到你的相簿或誰能編輯文件：設定錯會讓不該看的人看到或改你的東西。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch10.png" 
+            },{ 
+                title: "第十一章", 
+                subtitle: "機器學習入門", 
+                desc: "機器學習就像教一台機器分辨蘋果和香蕉：你給它很多範例，它會慢慢學會自己判類別，變成「數位小幫手」。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch11.png" 
+            },
+            { 
+                title: "第十二章", 
+                subtitle: "AI 幫忙抓駭客", 
+                desc: "AI 可以幫資安人員像超級保全機器人一樣檢查大量資料、找出異常，但它也會有誤判，要人來監督。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch12.png" 
+            },{ 
+                title: "第十三章", 
+                subtitle: "IDS & IPS 差在哪？", 
+                desc: "IDS 像監視器會「告訴你發生了什麼」，IPS 則像值勤警衛會「直接制止」不對的行為；兩者常配合使用。(共十題)", 
+                img: "../0-IMAGE/Chapter_IMG/ch13.png" 
+            }
+        ];
+
+        // 動態生成章節清單
+        const chapterList = document.getElementById("chapterList");
+        chapters.forEach((c, index) => {
+        const item = document.createElement("div");
+            item.className = "chapter-item";
+            item.innerHTML = `
+                <img src="${c.img}" alt="${c.title}" class="chapter-img">
+                <div class="chapter-info">
+                <div class="chapter-title">${c.title}:  ${c.subtitle}</div>
+                <div class="chapter-desc">${c.desc}</div>
+                </div>
+                <input type="checkbox" class="chapter-check" value="${c.title}" data-subtitle="${c.subtitle}" id="chapter-${index}">
+            `;
+            chapterList.appendChild(item);
+
+            // ✅ 點擊 checkbox 時切換外框
+            const checkbox = item.querySelector(".chapter-check");
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    item.classList.add("selected");
+                } else {
+                    item.classList.remove("selected");
+                }
+            });
+        });
+
+        // 點擊「開始測驗」跳轉
+        function startTest() {
+            const checked = [...document.querySelectorAll(".chapter-check:checked")];
+            if (checked.length === 0) {
+                alert("請選擇一個章節！");
+                return;
+            }
+
+            // 若多選，只取第一個或可傳陣列
+            const title = checked.map(c => c.value).join(",");
+            const subtitle = checked.map(c => c.dataset.subtitle).join(",");
+
+            const encodedTitle = encodeURIComponent(title);
+            const encodedSubtitle = encodeURIComponent(subtitle);
+
+            window.location.href = `4.2-Chapter_interactive.html?title=${encodedTitle}&subtitle=${encodedSubtitle}`;
+        }
+    </script>
+    </body>
+</html>
