@@ -16,17 +16,17 @@
 
 <script>
 const form = document.getElementById('myForm');
-const webAppUrl = "https://script.google.com/macros/s/AKfycbw_vs0XvnnkPnwnops2qg770MAhOSaW_Gr6V4tnUh6f9_l0MkDuTF7dXSKQ5RrSyDBl/exec"; // 替換成 Apps Script URL
+const webAppUrl = "https://script.google.com/macros/s/AKfycbwGDyIwI3bPzR_D8yEZ3LK_Zkx38FEIOM8HVt1x8WSVJy_ToA4vRgkX1iuDgLhGQ9pD/exec"; // 請替換成你的 Apps Script exec URL
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-  
+
   const data = {
     name: form.name.value,
     email: form.email.value,
     message: form.message.value
   };
-  
+
   fetch(webAppUrl, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -45,4 +45,3 @@ form.addEventListener('submit', e => {
 
 </body>
 </html>
-
