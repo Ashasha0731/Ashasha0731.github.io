@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>章節中</title>
+    <link rel="icon" type="image/png" href="../0-IMAGE/0_Nav/logo-遊戲廳.png?v=1"> <!-- 網站圖標設定 -->
+    <style>
+        /* ==================== 全域樣式 ==================== */
+        body {
+            background-image: url('../0-IMAGE/1_Guide-page/星空背景.gif');
+            background-size: cover;
+            /* 覆蓋整個容器 */
+            background-repeat: repeat;
+            /* 重複方便滾動 */
+            animation: move-bg 60s linear infinite;
+        }
+
+        @keyframes move-bg {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: -5000px 0;
+            }
+
+            /* 往左移動 */
+        }
+
+        /* ==================== 導覽列 ====================== */
+        #header-container {
+            position: fixed;
+            /* 固定在螢幕頂端 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            /* 導覽列高度 */
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+            /* 懸浮感陰影 */
+        }
+
+        /* =================== 返回上一頁 ===================== */
+        /* 左上角返回按鈕 */
+        .back-btn {
+            position: fixed;
+            top: 95px;
+            left: 20px;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: 2px solid white;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(250, 247, 247, 0.978);
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* =================== 章節標題 ===================== */
+        .chapter-img1 {
+            width: 300px;
+            /* 讓圖片比螢幕大 */
+            height: 40px;
+            position: fixed;
+            left: 0px;
+            top: 100px;
+            z-index: 101;
+            filter: drop-shadow(0px 0px 5px #ffffff);
+            /*增加符合PNG的陰影*/
+            transition: transform 0.3s ease;
+            /* 平滑過渡 */
+        }
+
+        .chapter-title1 {
+            /*章節*/
+            font-size: 30px;
+            position: fixed;
+            top: 100px;
+            left: 110px;
+            z-index: 102;
+            color: rgb(255, 255, 255);
+            text-shadow:
+                0 0 5px #fff,
+                0 0 20px rgb(0, 0, 0);
+            font-family: "微軟正黑體", sans-serif;
+            display: block;
+            /* 確保可被置中 */
+            width: 100%;
+            /* 可選，保證占滿橫向置中 */
+        }
+
+        .chapter-img2 {
+            width: 800px;
+            /* 讓圖片比螢幕大 */
+            height: 80px;
+            position: fixed;
+            left: 0px;
+            top: 80px;
+            filter: drop-shadow(0px 0px 10px #ffffffae);
+            /*增加符合PNG的陰影*/
+            transition: transform 0.3s ease;
+            /* 平滑過渡 */
+        }
+
+        .chapter-title2 {
+            /*章節*/
+            font-size: 40px;
+            position: fixed;
+            top: 90px;
+            left: 320px;
+            z-index: 100;
+            color: rgb(255, 255, 255);
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px rgb(0, 0, 0),
+                0 0 20px rgb(0, 0, 0);
+            font-family: "微軟正黑體", sans-serif;
+            display: block;
+            /* 確保可被置中 */
+            width: 100%;
+            /* 可選，保證占滿橫向置中 */
+        }
+
+
+        /* ====================  youtube外嵌 ====================== */
+        /* 影片容器置中 + 16:9 */
+        .video-container {
+            position: relative;
+            width: 800px;
+            margin: 130px auto;
+            /* ✅ 上方留空 + 水平置中 */
+            aspect-ratio: 16 / 9;
+            display: flex;
+            /* ✅ Flex 讓內容完全置中 */
+            justify-content: center;
+        }
+
+        /* 影片圓角 & 陰影 */
+        .video-round iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            /* ✅ 圓角 */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            /* ✅ 陰影 */
+        }
+
+        /* ==================== 章節物件(按鍵) ====================== */
+        .img-GOinteractive {
+            width: 400px;
+            height: auto;
+            position: fixed;
+            right: -1px;
+            bottom: 20px;
+            z-index: 5001;
+            filter: drop-shadow(0px 0px 10px #ffffffae);
+            /*增加符合PNG的陰影*/
+            transition: transform 0.3s ease;
+            /* 平滑過渡 */
+        }
+
+        .img-download {
+            width: 300px;
+            /* 讓圖片比螢幕大 */
+            height: auto;
+            position: fixed;
+            right: 350px;
+            bottom: 35px;
+            z-index: 5000;
+            filter: drop-shadow(0px 0px 10px #ffffffae);
+            /*增加符合PNG的陰影*/
+            transition: transform 0.3s ease;
+            /* 平滑過渡 */
+        }
+
+        .img-GOinteractive:hover {
+            transform: scale(1.1) rotate(20deg);
+            /* 保持旋轉角度同時放大 */
+        }
+
+        .img-download:hover {
+            transform: scale(1.1) rotate(20deg);
+            /* 保持旋轉角度同時放大 */
+        }
+
+        /* ===================== 吉祥物 =================== */
+        /* ====== AI吉祥物- 彈出視窗 ====== */
+        #Mrs_XL-2-container {
+            position: fixed;
+            /* 固定在螢幕頂端 */
+            z-index: 50000;
+            font-size: 20px;
+            box-shadow: 0 3px 12px rgba(255, 255, 255, 0.4);
+            /* 懸浮感陰影 */
+        }
+
+        /* ====== 彈出視窗內容 ====== */
+        /* 視窗預設隱藏 */
+        /* 彈窗淡入淡出 */
+        .ai-popup-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: 90%;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            z-index: 6000;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+
+            /* 動畫效果 */
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .ai-popup-content.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .ai-popup-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #ff4d4d;
+            border: none;
+            color: white;
+            font-size: 18px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* 遮罩淡入淡出 */
+        #ai-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5000;
+
+            /* 動畫效果 */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        #ai-popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ===================== 底列 =================== */
+        .footer {
+            width: 100%;
+            height: 50px;
+            /* 高一點更舒適 */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+
+            /* 漸層 + 半透明 + 毛玻璃 */
+            background: linear-gradient(120deg, rgba(9, 9, 9, 0.4), rgba(39, 40, 46, 0.6), rgba(15, 15, 15, 0.8));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            /* 頂部細邊框增加層次 */
+
+            /* 文字樣式 */
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+
+            /* 置中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            /* 動態光暈（可選） */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2) inset;
+        }
+    </style>
+</head>
+
+<!--------------------------- html ----------------------------->
+
+<body>
+    <!-- 導覽列 -->
+    <header>
+        <div id="header-container"></div>
+        <button class="back-btn" onclick="enterBack()">返回</button>
+        <!-- 章節標題 -->
+        <div>
+            <img class="chapter-img1" src="../0-IMAGE/4-Game-Chapter/章節旗幟1.png" alt="章節旗幟">
+            <span class="chapter-title1">第一章 ​ ​ ​ </span>
+        </div>
+        <div>
+            <img class="chapter-img2" src="../0-IMAGE/4-Game-Chapter/章節旗幟-教材.png" alt="章節旗幟">
+            <span class="chapter-title2">網頁安全探索</span>
+        </div>
+    </header>
+
+    <!-- 主頁面 -->
+    <main>
+        <!-- 章節影片 -->
+        <h2 id="chapterTitle">一、什麼是系統安全？</h2>
+        <div class="video-container video-round">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/hVGYmfvCIe0?si=FG5Q6bGBFyAHzOmh"
+                title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <!-- 章節細項按鈕 -->
+        <div>
+            <!-- 前往測驗區 -->
+            <a href="4.2-Chapter_interactive.html">
+                <img class="img-GOinteractive" src="../0-IMAGE/4-Game-Chapter/4-1/前往測驗.png" alt="前往測驗區">
+            </a>
+            <!-- 下載簡報 -->
+            <a id="downloadLink" href="#" download>
+                <img class="img-download" src="../0-IMAGE/4-Game-Chapter/4-1/簡報下載.png" alt="簡報下載">
+            </a>
+        </div>
+
+
+    </main>
+
+    <!-- 固定元素-吉祥物 + AI對話框 -->
+    <div id="Mrs_XL-2-container"></div>
+    <!-- 嵌入colabAI -->
+    <div id="ai-popup">
+        <!-- ✅ 隱藏的彈出視窗(AI對話) -->
+        <div class="ai-popup-content" id="aiPopup">
+            <iframe src="0.11_colabAI.html" frameborder="0"></iframe>
+            <button id="close-btn">✕</button>
+        </div>
+    </div>
+
+
+
+    <!-- 頁尾 -->
+    <footer class="footer">
+        <!-- 可放文字或按鈕 -->
+        <span>© 2025 中學生資訊安全網</span>
+    </footer>
+
+
+
+    <!---------------------------- JS ------------------------------>
+    <script>
+        //載入導覽列    // 使用 fetch 載入 header.html
+        fetch('./0_Nav-2.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('載入 HTML 失敗:', error);
+            });
+    </script>
+
+    <script>
+        // 載入吉祥物
+        fetch('./0.1_Mrs_XL-2.html')
+            .then(res => res.text())
+            .then(html => {
+                const container = document.getElementById('Mrs_XL-2-container');
+                container.innerHTML = html;
+
+                // 執行吉祥物裡的 <script>
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) newScript.src = oldScript.src;
+                    else newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+
+                // 綁定點擊吉祥物事件
+                const mascot = document.getElementById("Mrs_XL-2-container");
+                const aiPopupContainer = document.getElementById("ai-popup");
+                const aiPopupContent = document.getElementById("aiPopup");
+                const closeBtn = document.getElementById("close-btn");
+
+                if (mascot && aiPopupContainer && aiPopupContent && closeBtn) {
+                    mascot.addEventListener("click", () => {
+                        aiPopupContainer.classList.add("show");
+                        aiPopupContent.classList.add("show");
+                    });
+
+                    function closePopup() {
+                        // 移除 show class 觸發淡出
+                        aiPopupContent.classList.remove("show");
+                        aiPopupContainer.classList.remove("show");
+                    }
+
+                    closeBtn.addEventListener("click", closePopup);
+
+                    // 點遮罩也關閉
+                    aiPopupContainer.addEventListener("click", e => {
+                        if (e.target === e.currentTarget) {
+                            closePopup();
+                        }
+                    });
+                }
+            });
+    </script>
+
+
+    <!-- 4.1-Chapter_teach.html -->
+    <!-- 切換對應之章節內容 -->
+    <script>
+        // 讀取 URL 參數
+        const params = new URLSearchParams(window.location.search);
+        const title = params.get('title');      // ex: "第一章"
+        const subtitle = params.get('subtitle'); // ex: "系統安全是什麼？"
+        console.log(title, subtitle); // 確認使用的資料
+
+        // 標題：更新章節旗幟文字
+        const t1 = document.querySelector('.chapter-title1');
+        const t2 = document.querySelector('.chapter-title2');
+        if (t1) t1.textContent = title || t1.textContent;
+        if (t2) t2.textContent = subtitle || t2.textContent;
+
+
+        // ✅ YouTube 對應表（key = "title|subtitle"），影片 ID 已去掉 ?si= 參數
+        const youtubeLinks = {
+            "第一章|系統安全是什麼？": "722_zI7m-5E",
+            "第二章|APT攻擊與網路攻擊鏈": "Ypoyr30515o",
+            "第三章|防火牆與封包檢查": "tXPjJUz-IEI",
+            "第四章|網站會被駭嗎？": "UJJc8XMpIYI",
+            "第五章|檔案誰可以看？": "J2ZdJzHYiKw",
+            "第六章|找出可疑的電腦行為": "4gtTDufMfK0",
+            "第七章|誰動了我的檔案？": "xadhZSFR1Q0",
+            "第八章|漏洞與密碼怎麼管？": "Djr5OQbvS80",
+            "第九章|密碼怎麼傳？駭客怎麼偷": "hfEW8srJdtw",
+            "第十章|檔案怎麼保護？": "CYKzBAuwRnA",
+            "第十一章|機器學習入門": "HC2an2fB5yw",
+            "第十二章|AI 幫忙抓駭客": "NK510NyEOPY",
+            "第十三章|IDS & IPS 差在哪？": "TSyegK2lQ2s"
+        };
+
+        // 組合 key1 去找影片 ID
+        const key1 = `${title || ''}|${subtitle || ''}`;
+        const defaultVideoId = "hVGYmfvCIe0"; // 如果沒有對應則使用預設影片（可改）
+        const videoId = youtubeLinks[key1] || defaultVideoId;
+
+        // 找到 iframe 並設定 src
+        const iframe = document.querySelector('.video-container iframe');
+        if (iframe) {
+            // 若原本 iframe 的 src 已帶參數，直接覆寫為正確 embed URL
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+        } else {
+            console.warn('找不到 .video-container iframe 元素。');
+        }
+
+        // ✅ 章節 ➝ 簡報下載連結對應表
+        const pptLinks = {
+            "第一章-系統安全是什麼？": "https://drive.google.com/uc?export=download&id=1nOW0MTdXNHEtuk3ugJketwYFk5nZHEEC",
+            "第二章-APT攻擊與網路攻擊鏈": "https://drive.google.com/uc?export=download&id=143FO2O76bS5p8Q8982cM4zQiEiXufqLI",
+            "第三章-防火牆與封包檢查": "https://drive.google.com/uc?export=download&id=1vx_1-iYyRz-dSF0ePNYLhsIfkRv-WHI6",
+            "第四章-網站會被駭嗎？": "https://drive.google.com/uc?export=download&id=1LQSs2I4NtXdr73npwgR7fqv3bSuMCZ-J",
+            "第五章-檔案誰可以看？": "https://drive.google.com/uc?export=download&id=1TDvizYM-CCB6NcH8_DOpkJbp8OwdxYfv",
+            "第六章-找出可疑的電腦行為": "https://drive.google.com/uc?export=download&id=1kPI1GBZU_-q5rJe_mp0FfC5W8ASlbId7",
+            "第七章-誰動了我的檔案？": "https://drive.google.com/uc?export=download&id=10nQ9WJRV9g7sKgCou3L3YcB_yp9fioS_",
+            "第八章-漏洞與密碼怎麼管？": "https://drive.google.com/uc?export=download&id=1q5cHP_pq5sfVVjBc0FXSUl6dWeqFZ1v2",
+            "第九章-密碼怎麼傳？駭客怎麼偷": "https://drive.google.com/uc?export=download&id=1kMrRPRk-RYs1TSS9F6rFVo-oCDErQ23Q",
+            "第十章-檔案怎麼保護？": "https://drive.google.com/uc?export=download&id=1qxp9epLia61Jy7UMWm-Q6Qa6ZBFEXHp7",
+            "第十一章-機器學習入門": "https://drive.google.com/uc?export=download&id=1RFXnsEP5JSRxK6aSA__FgeIPM-m8_e5F",
+            "第十二章-AI 幫忙抓駭客": "https://drive.google.com/uc?export=download&id=1zcffUuxNMoKSpuPLAvnvHN-reeyVhWOv",
+            "第十三章-IDS & IPS 差在哪？": "https://drive.google.com/uc?export=download&id=1UdCGnflhg74iqJ7u23zom2vSe70Apvl7"
+        };
+
+        // ✅ 組合 key2 並找出對應連結
+        const key2 = `${title}-${subtitle}`;
+        const downloadLink = document.getElementById('downloadLink');
+
+        if (pptLinks[key2]) {
+            downloadLink.href = pptLinks[key2];
+        } else {
+            downloadLink.href = "#";
+            console.warn("⚠️ 此章節未設定下載連結：", key2);
+        }
+
+    </script>
+
+    <!-- 章節資訊傳入下一頁面 -->
+    <script>
+        // ▶返回按鈕： （保留原先參數）
+        function enterBack() {
+            const referrer = document.referrer; // 取得上一頁完整網址
+            console.log("上一頁:", referrer);
+
+            // 預設參數，如果你需要帶參數回去
+            const urlParams = new URLSearchParams(window.location.search);
+            const title = urlParams.get("title") || "";
+            const subtitle = urlParams.get("subtitle") || "";
+            const encodedTitle = encodeURIComponent(title);
+            const encodedSubtitle = encodeURIComponent(subtitle);
+
+            if (referrer && referrer.includes("4-Game-Chapter.html")) {
+                window.location.href = `4-Game-Chapter.html?title=${encodedTitle}&subtitle=${encodedSubtitle}`;
+            } else {
+                window.location.href = "5_ToStudy.html";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

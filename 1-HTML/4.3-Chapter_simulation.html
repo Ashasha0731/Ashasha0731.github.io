@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黑白藍控制板 + 固定計步器</title>
+    <link rel="icon" type="image/png" href="../0-IMAGE/0_Nav/logo-遊戲廳.png?v=1"> <!-- 網站圖標設定 -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* ===== CSS 黑藍科技風 ===== */
+        body {
+            font-family: "Courier New", monospace;
+            background: #000 url('../0-IMAGE/1_Guide-page/星空背景.gif') center/auto no-repeat fixed;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* ==================== 導覽列 ====================== */
+        #header-container {
+            position: fixed;
+            /* 固定在螢幕頂端 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            /* 導覽列高度 */
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+            /* 懸浮感陰影 */
+        }
+
+        /* =================== 返回上一頁 ===================== */
+        /* 左上角返回按鈕 */
+        .back-btn {
+            position: fixed;
+            top: 150px;
+            left: 20px;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: 2px solid white;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(250, 247, 247, 0.978);
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        #stepCounterContainer {
+            position: fixed;
+            left: 20px;
+            top: 40px;
+            background: #111;
+            color: #0af;
+            padding: 10px 15px;
+            border: 2px solid #0af;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #0af, inset 0 0 25px #0af5;
+            font-weight: bold;
+            font-size: 1em;
+            z-index: 1000;
+        }
+
+        .control-panel {
+            width: 1000px;
+            max-width: 95%;
+            height: 600px;
+            margin-top: 80px;
+            background: #111;
+            border: 2px solid #0af;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 20px #0af, 0 0 40px #0af5 inset;
+        }
+
+        .panel-header {
+            padding: 15px;
+            background: #000;
+            border-bottom: 2px solid #0af;
+            font-weight: bold;
+            font-size: 1.2em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-light {
+            width: 12px;
+            height: 12px;
+            margin-left: 10px;
+            border-radius: 50%;
+            background: #0af;
+            box-shadow: 0 0 8px #0af;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50%,
+            100% {
+                opacity: 1;
+            }
+
+            25%,
+            75% {
+                opacity: 0.2;
+            }
+        }
+
+        .panel-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #111;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.95em;
+            box-shadow: 0 0 5px #0af;
+            border-left: 3px solid #0af;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: #001122;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: #111;
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .option-buttons button {
+            display: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #0af;
+            background: linear-gradient(145deg, #001122, #003366);
+            color: #0af;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 170, 255, 0.4), inset 0 0 5px rgba(0, 170, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .option-buttons button:hover {
+            background: linear-gradient(145deg, #003366, #0066cc);
+            box-shadow: 0 6px 20px rgba(0, 170, 255, 0.7), inset 0 0 10px rgba(0, 170, 255, 0.4);
+            transform: translateY(-2px);
+            color: #fff;
+        }
+
+        .option-buttons button:active {
+            box-shadow: 0 2px 8px rgba(0, 170, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.6);
+            transform: translateY(1px);
+        }
+
+        .panel-input {
+            display: flex;
+            padding: 10px;
+            border-top: 2px solid #0af;
+            background: #000;
+        }
+
+        .panel-input input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #0af;
+            background: #111;
+            color: #fff;
+            outline: none;
+            font-family: monospace;
+        }
+
+        .panel-input button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #0af;
+            background: #000;
+            color: #0af;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .panel-input button:hover {
+            background: #0af;
+            color: #000;
+            transition: 0.2s;
+        }
+
+        #announcementOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            /* 確保在控制板之上 */
+        }
+
+        #announcementBox {
+            background: #111;
+            border: 2px solid #0af;
+            border-radius: 15px;
+            padding: 30px 40px;
+            text-align: center;
+            box-shadow: 0 0 25px #0af, 0 0 50px #0af inset;
+            max-width: 500px;
+        }
+
+        #announcementBox img#mascot {
+            width: 100px;
+            margin-bottom: 15px;
+        }
+
+        #announcementBox p#announcementText {
+            color: #0af;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        #announcementBox button#announcementContinueBtn {
+            padding: 10px 25px;
+            border-radius: 25px;
+            border: 2px solid #0af;
+            background: linear-gradient(145deg, #001122, #003366);
+            color: #0af;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #announcementBox button#announcementContinueBtn:hover {
+            background: linear-gradient(145deg, #003366, #0066cc);
+            color: #fff;
+        }
+
+
+        /* ==================== 吉祥物 ====================== */
+        #Mrs_XL-2-container {
+            position: fixed;
+            /* 固定在螢幕頂端 */
+            z-index: 50000;
+            font-size: 20px;
+            box-shadow: 0 3px 12px rgba(255, 255, 255, 0.4);
+            /* 懸浮感陰影 */
+        }
+
+        /* ====== 彈出視窗內容 ====== */
+        /* 視窗預設隱藏 */
+        /* 彈窗淡入淡出 */
+        .ai-popup-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: 90%;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            z-index: 6000;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+
+            /* 動畫效果 */
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .ai-popup-content.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .ai-popup-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #ff4d4d;
+            border: none;
+            color: white;
+            font-size: 18px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* ====== AI吉祥物- 彈出視窗 ====== */
+        /* 遮罩淡入淡出 */
+        #ai-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5000;
+
+            /* 動畫效果 */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        #ai-popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 導覽列 -->
+    <header>
+        <div id="header-container"></div>
+        <button class="back-btn" onclick="enterBack()">返回</button>
+    </header>
+
+    <!-- 固定元素-吉祥物 + 對話框 -->
+    <div id="Mrs_XL-2-container"></div>
+    <!-- 嵌入colabAI -->
+    <div id="ai-popup">
+        <!-- ✅ 隱藏的彈出視窗(AI對話) -->
+        <div class="ai-popup-content" id="aiPopup">
+            <iframe src="0.11_colabAI.html" frameborder="0"></iframe>
+            <button id="close-btn">✕</button>
+        </div>
+    </div>
+
+    <div id="stepCounterContainer" style="margin-top: 50px;">當前狀態: <span id="stepCounter">0</span></div>
+
+    <div class="control-panel">
+        <div class="panel-header">
+            <span>情境模擬題</span>
+            <span class="status-light"></span>
+            <span id="chapterTitle">第一章 系統安全是什麼？</span>
+        </div>
+
+        <div class="panel-messages" id="panelMessages"></div>
+
+        <div class="option-buttons">
+            <button>A.</button><button>B.</button>
+            <button>C.</button><button>D.</button>
+            <button>E.</button>
+        </div>
+
+        <button id="continueBtn">繼續</button>
+
+        <div class="panel-input">
+            <input type="text" id="userInput" placeholder="輸入指令..." />
+            <button onclick="sendMessage()">送出</button>
+        </div>
+    </div>
+
+    <!-- 公告框 HTML -->
+    <div id="announcementOverlay" style="display:none;">
+        <div id="announcementBox">
+            <img src="../0-IMAGE/hi.png" alt="吉祥物" id="mascot">
+            <p id="announcementText">📢 系統公告</p>
+            <button id="announcementContinueBtn">繼續</button>
+        </div>
+    </div>
+
+
+    <script>
+        //載入導覽列
+        fetch('./0_Nav-2.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('載入 HTML 失敗:', error);
+            });
+    </script>
+
+    <!-- 🤖 載入吉祥物 & AI 助手彈窗 -->
+    <script>
+        /* ------------------------
+        功能：載入吉祥物 HTML（含互動與AI助手開啟）
+        說明：
+        1️⃣ fetch 載入吉祥物檔案「0.1_Mrs_XL-2.html」
+        2️⃣ 重新執行內嵌 script
+        3️⃣ 綁定點擊吉祥物 → 開啟 AI 助手彈窗
+        ------------------------ */
+        fetch('./0.1_Mrs_XL-2.html')
+            .then(res => res.text())
+            .then(html => {
+                const container = document.getElementById('Mrs_XL-2-container');
+                container.innerHTML = html;
+
+                // 重新執行吉祥物內嵌 script
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) newScript.src = oldScript.src;
+                    else newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+
+                // 綁定吉祥物 → 開啟/關閉 AI 助手視窗
+                const mascot = document.getElementById("Mrs_XL-2-container");
+                const aiPopupContainer = document.getElementById("ai-popup");
+                const aiPopupContent = document.getElementById("aiPopup");
+                const closeBtn = document.getElementById("close-btn");
+
+                if (mascot && aiPopupContainer && aiPopupContent && closeBtn) {
+                    mascot.addEventListener("click", () => {
+                        aiPopupContainer.classList.add("show");
+                        aiPopupContent.classList.add("show");
+                    });
+
+                    function closePopup() {
+                        aiPopupContent.classList.remove("show");
+                        aiPopupContainer.classList.remove("show");
+                    }
+
+                    closeBtn.addEventListener("click", closePopup);
+
+                    // 點擊遮罩關閉
+                    aiPopupContainer.addEventListener("click", e => {
+                        if (e.target === e.currentTarget) closePopup();
+                    });
+                }
+            });
+    </script>
+
+    <script>
+        const panelMessages = document.getElementById('panelMessages');
+        const userInput = document.getElementById('userInput');
+        const stepCounterEl = document.getElementById('stepCounter');
+        const continueBtn = document.getElementById('continueBtn');
+        const optionButtons = document.querySelectorAll('.option-buttons button');
+
+        let excelData = null;
+        let stepCounter = 0;
+        let firstClick = true;
+        let PlayerChoose = '';
+        let Choose = '';
+        let Choosebtncol = '';
+        let ArrayList1 = [];
+        const excelPath = "../4-Teaching/3.ch_story.xlsx";
+
+
+        // 取得網址參數-全域）
+        const params = Object.fromEntries(new URLSearchParams(location.search));
+        const { title, subtitle } = params;
+
+
+        // ===== 讀取 Excel =====
+        // ===== 讀取 Excel 並根據網址參數篩選章節 =====
+        fetch(excelPath)
+            .then(res => res.arrayBuffer())
+            .then(data => {
+                const wb = XLSX.read(data, { type: 'array' });
+                const sheet = wb.Sheets[wb.SheetNames[0]];
+                let allData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                // 篩選出相同章節的資料（A欄含章節標題）
+                if (title && subtitle) {
+                    const chapterKey = `${title.trim()}`;
+                    const filtered = allData.filter(row => String(row[0] || '').trim() === chapterKey);
+                    if (filtered.length > 0) {
+                        excelData = filtered;
+                        appendMessageTyping(`[系統]已載入章節：「${chapterKey}」，共 ${excelData.length} 筆資料。`, 'bot');
+                    } else {
+                        excelData = [];
+                        appendMessageTyping(`[系統]未找到章節「${chapterKey}」，請確認 Excel 內容。`, 'bot');
+                    }
+                } else {
+                    excelData = allData;
+                    appendMessageTyping(`[系統]未指定章節，已載入全部 ${excelData.length} 筆資料。`, 'bot');
+                }
+            })
+            .catch(() => appendMessageTyping('[系統]讀取 Excel 失敗，請確認路徑正確', 'bot'));
+
+        // ===== 訊息顯示 =====
+        function appendMessageTyping(text, sender = 'bot', callback = null) {
+            const msg = document.createElement('div');
+            msg.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            panelMessages.appendChild(msg);
+            let i = 0;
+            const interval = setInterval(() => {
+                msg.innerText += text.charAt(i++);
+                panelMessages.scrollTop = panelMessages.scrollHeight;
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    if (callback) callback(); // 訊息打完後呼叫 callback
+                }
+            }, 30);
+        }
+
+        function appendMessage(text, sender = 'bot') {
+            const msg = document.createElement('div');
+            msg.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            msg.innerText = text;
+            panelMessages.appendChild(msg);
+            panelMessages.scrollTop = panelMessages.scrollHeight;
+        }
+
+        // ===== 傳送訊息 =====
+        function sendMessage() {
+            const msg = userInput.value.trim();
+            if (!msg) return;
+            appendMessage(msg, 'user');
+
+            // 紀錄玩家選擇
+            optionButtons.forEach((btn, idx) => {
+                if (btn.style.display !== 'none' && btn.innerText === msg) {
+                    PlayerChoose = msg;
+                    Choose = `欄位 ${String.fromCharCode(70 + idx)} (按鈕 ${msg})`;
+                    console.log("玩家點選欄位:", Choose);
+                }
+            });
+
+            userInput.value = '';
+            continueBtn.click();
+        }
+
+        userInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+        // ===== 點擊繼續 =====
+        continueBtn.addEventListener('click', () => {
+            stepCounter++;
+            stepCounterEl.innerText = stepCounter;
+
+            // 讀取當列 A~K 資料，存入 ArrayList1
+            if (excelData) {
+                const currentRow = excelData.find(row => String(row[1]).trim() === String(stepCounter).trim());
+                if (currentRow) {
+                    ArrayList1 = currentRow.slice(0, 11); // A~K
+                    console.log("當列資料 ArrayList1:", ArrayList1);
+                }
+            }
+
+            checkExcelForStep(stepCounter);
+            if (firstClick) firstClick = false;
+        });
+
+        let reviewCount = 0; // 新增：記錄芯樂點評次數
+        // ===== 檢查 Excel 對應步驟 =====
+        function checkExcelForStep(stepValue) {
+            if (!excelData) return;
+            const targetRow = excelData.find(row => String(row[1]).trim() === String(stepValue).trim());
+            if (!targetRow) return;
+
+            const typeC = targetRow[2];
+            const [D_Col, F_Col, G_Col, H_Col, I_Col, J_Col] = [3, 5, 6, 7, 8, 9];
+            const optionsArray = [F_Col, G_Col, H_Col, I_Col, J_Col].map(col => targetRow[col] || '');
+
+            optionButtons.forEach(btn => { btn.style.display = 'none'; btn.innerText = ''; });
+            continueBtn.style.display = optionsArray.some(opt => opt.trim() !== '') ? 'none' : 'inline-block';
+
+            switch (typeC) {
+
+                case '選擇':
+                    appendMessageTyping(targetRow[D_Col] || '（情境敘述）', 'bot');
+                    optionsArray.forEach((opt, idx) => {
+                        if (opt.trim() !== '') {
+                            optionButtons[idx].style.display = 'inline-block';
+                            optionButtons[idx].innerText = opt;
+                            optionButtons[idx].onclick = () => {
+                                PlayerChoose = opt.trim();
+                                Choosebtn = `${String.fromCharCode(70 + idx)}`;
+                                Choose = `欄位 ${String.fromCharCode(70 + idx)} (按鈕 ${opt})`;
+                                console.log("玩家點選欄位:", Choose);
+
+                                // ===== 特殊邏輯 =====
+                                if (stepCounter === 1 && typeC === '選擇') {
+                                    if (Choosebtn === 'F') { // A
+                                        appendMessageTyping("[系統]準備中......................................................", 'bot', () => {
+                                            stepCounter++; // 進入下一步
+                                            stepCounterEl.innerText = stepCounter;
+                                            checkExcelForStep(stepCounter); // 讀取下一步
+                                        });
+                                        appendMessageTyping("")
+                                        return;
+                                    } else if (Choosebtn === 'G') { // B
+                                        appendMessageTyping("", 'bot', () => {
+                                            stepCounter = 1; // 重新載入
+                                            stepCounterEl.innerText = stepCounter;
+                                            checkExcelForStep(stepCounter); // 重新讀取第1列
+                                        });
+                                        return;
+                                    }
+                                }
+
+                                userInput.value = opt.trim();
+                                sendMessage();
+                            };
+                        }
+                    });
+                    break;
+                case '敘述':
+                    appendMessageTyping(targetRow[D_Col] || '（情境敘述）', 'bot');
+                    break;
+
+                case '結果':
+                    continueBtn.style.display = 'none'; // 隱藏繼續按鈕，等結果顯示後再出現
+                    if (Choosebtn === "F") { //A
+                        appendMessageTyping('[結果]' + targetRow[F_Col]);
+                        Choosebtncol = F_Col;
+                    } else if (Choosebtn === "G") { //B
+                        appendMessageTyping('[結果]' + targetRow[G_Col]);
+                        Choosebtncol = G_Col;
+                    } else if (Choosebtn === "H") {  //C
+                        appendMessageTyping('[結果]' + targetRow[H_Col]);
+                        Choosebtncol = H_Col;
+                    } else if (Choosebtn === "I") {  //D
+                        appendMessageTyping('[結果]' + targetRow[I_Col]);
+                        Choosebtncol = I_Col;
+                    } else if (Choosebtn === "J") {  //E
+                        appendMessageTyping('[結果]' + targetRow[J_Col]);
+                        Choosebtncol = J_Col;
+                    }
+                    continueBtn.style.display = 'inline-block';
+
+
+                    break;
+                case '芯樂點評':
+                    // 顯示公告框
+                    reviewCount++;
+                    // 顯示公告框
+                    announcementOverlay.style.display = 'flex';
+                    document.getElementById('announcementText').innerText = targetRow[Choosebtncol] || '（芯樂點評）';
+
+                    const box = document.getElementById('announcementBox');
+                    const btnArea = document.createElement('div');
+                    btnArea.style.marginTop = "20px";
+                    btnArea.style.display = "flex";
+                    btnArea.style.justifyContent = "center";
+                    btnArea.style.gap = "15px";
+
+                    // 清空舊按鈕
+                    box.querySelectorAll('button').forEach(btn => btn.remove());
+
+                    if (reviewCount === 2) {
+                        // 第二次出現 -> 兩顆按鈕
+                        const params = Object.fromEntries(new URLSearchParams(location.search));
+                        const { title, subtitle, playerName, playerGrade } = params;
+                        const page = '1-HTML/7_ToStory.html'; // 依實際頁面命名修改
+
+                        const backToListBtn = document.createElement('button');
+                        backToListBtn.innerText = '返回情境測驗列表';
+                        backToListBtn.onclick = () => {
+                            window.location.href = `${page}.html?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(subtitle)}&playerName=${encodeURIComponent(playerName)}&playerGrade=${encodeURIComponent(playerGrade)}`;
+                        };
+
+                        const goBackBtn = document.createElement('button');
+                        goBackBtn.innerText = '返回上一頁';
+                        goBackBtn.onclick = () => history.back();
+
+                        [backToListBtn, goBackBtn].forEach(btn => {
+                            btn.style.padding = "10px 25px";
+                            btn.style.borderRadius = "25px";
+                            btn.style.border = "2px solid #0af";
+                            btn.style.background = "linear-gradient(145deg, #001122, #003366)";
+                            btn.style.color = "#0af";
+                            btn.style.fontWeight = "bold";
+                            btn.style.cursor = "pointer";
+                            btn.onmouseenter = () => { btn.style.background = "linear-gradient(145deg, #003366, #0066cc)"; btn.style.color = "#fff"; };
+                            btn.onmouseleave = () => { btn.style.background = "linear-gradient(145deg, #001122, #003366)"; btn.style.color = "#0af"; };
+                            btnArea.appendChild(btn);
+                        });
+
+                        box.appendChild(btnArea);
+                    } else {
+                        // 第一次 -> 單顆繼續按鈕
+                        const continueBtnNew = document.createElement('button');
+                        continueBtnNew.id = 'announcementContinueBtn';
+                        continueBtnNew.innerText = '繼續';
+                        continueBtnNew.onclick = () => {
+                            announcementOverlay.style.display = 'none';
+                            continueBtn.click();
+                        };
+                        box.appendChild(continueBtnNew);
+                    }
+                    break;
+
+                default:
+                    appendMessageTyping(`#未知類型：${typeC}`, 'bot');
+            }
+        }
+
+
+        // ===== URL 章節標題 =====
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = Object.fromEntries(new URLSearchParams(location.search));
+            const chapterSpan = document.getElementById('chapterTitle');
+            if (chapterSpan && params.title && params.subtitle)
+                chapterSpan.innerText = `${params.title} ${params.subtitle}`;
+        });
+    </script>
+
+    <script>
+        const announcementOverlay = document.getElementById('announcementOverlay');
+        const announcementContinueBtn = document.getElementById('announcementContinueBtn');
+
+        // 點擊公告框的「繼續」等同點擊原本的 continueBtn
+        announcementContinueBtn.addEventListener('click', () => {
+            announcementOverlay.style.display = 'none'; // 關閉公告框
+            continueBtn.click(); // 觸發原本繼續按鈕
+        });
+
+    </script>
+
+    <script>
+        // ▶返回按鈕： （保留原先參數）
+        function enterBack() {
+            const referrer = document.referrer; // 取得上一頁完整網址
+            console.log("上一頁:", referrer);
+
+            // 預設參數，如果你需要帶參數回去
+            const urlParams = new URLSearchParams(window.location.search);
+            const title = urlParams.get("title") || "";
+            const subtitle = urlParams.get("subtitle") || "";
+            const encodedTitle = encodeURIComponent(title);
+            const encodedSubtitle = encodeURIComponent(subtitle);
+
+            if (referrer && referrer.includes("4-Game-Chapter.html")) {
+                window.location.href = `4-Game-Chapter.html?title=${encodedTitle}&subtitle=${encodedSubtitle}`;
+            } else {
+                window.location.href = "7_ToStory.html";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

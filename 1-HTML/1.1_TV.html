@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三張輪播系統</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      /* 改成上下排列 */
+      /* align-items: center;   垂直置中*/
+      min-height: 100vh;
+      background: #222;
+      font-family: Arial, sans-serif;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: 70%;
+      aspect-ratio: 6 / 1;
+      /* 保持比例 */
+      bottom: -10px;
+    }
+
+    .carousel-slides {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70%;
+      gap: 2%;
+      transition: transform 0.5s ease;
+    }
+
+    .carousel-slide {
+      flex: 0 0 auto;
+      border-radius: 12px;
+      /* 圓角卡片 */
+      background-color: #21202051;
+      /* 卡片背景 */
+      border: 2px solid rgb(255, 255, 255);
+      /* 粗細 2px，可改成 1px~4px */
+      overflow: hidden;
+      cursor: pointer;
+      /* 卡片陰影 - 立體感 */
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.2),
+        /* 近距離柔和陰影 */
+        0 8px 20px rgba(0, 0, 0, 0.15);
+      /* 遠距離擴散陰影 */
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .carousel-slide.center {
+      flex: 0 0 60%;
+      z-index: 2;
+    }
+
+    .carousel-slide.side {
+      flex: 0 0 22%;
+      /*調整小視窗寬度*/
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .carousel-slide-mix {
+      margin-top: -60px;
+      height: 150%;
+      /*調整小視窗寬度*/
+    }
+
+    .carousel-slide:hover {
+      transform: scale(1.05);
+      border: 4px solid rgb(255, 255, 255);
+      /* 粗細*/
+
+    }
+
+    /* 左右按鈕 */
+    .prev-btn,
+    .next-btn {
+      width: 65px;
+      height: 65px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 25px;
+      color: white;
+      background: rgba(255, 255, 255, 0.4);
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      z-index: 3;
+      transition: all 0.2s ease;
+      margin-top: -80px;
+    }
+
+    .prev-btn {
+      left: -15%;
+    }
+
+    .next-btn {
+      right: -15%;
+    }
+
+
+    .prev-btn:hover,
+    .next-btn:hover {
+      border: 2px solid white;
+      background: rgba(0, 0, 0, 0.6);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    /* Dots */
+    .dots {
+      position: absolute;
+      bottom: -60px;
+      /*與上方距離*/
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 3;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(70, 69, 69, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .dot:hover {
+      border: 2px solid white;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    @media(max-width: 768px) {
+      .carousel-slide.center {
+        flex: 0 0 70%;
+      }
+
+      .carousel-slide.side {
+        flex: 0 0 20%;
+      }
+
+      .prev-btn,
+      .next-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+        margin-top: -20px;
+        background-color: rgba(195, 238, 238, 0.637);
+      }
+
+      .next-btn {
+        right: -15%;
+      }
+
+      .dot {
+        margin-top: -30px;
+      }
+    }
+
+    @media(max-width: 480px) {
+      .carousel-slide.center {
+        flex: 0 0 80%;
+      }
+
+      .carousel-slide.side {
+        display: none;
+      }
+
+      .dot {
+        margin-top: 0px;
+        background: rgba(201, 201, 201, 0.5);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="carousel-container">
+    <button class="prev-btn">&#10094;</button>
+    <button class="next-btn">&#10095;</button>
+
+    <div class="carousel-slides">
+      <div class="carousel-slide carousel-slide-mix prev side"><img src="" alt="prev"></div>
+      <div class="carousel-slide center"><img src="" alt="current"></div>
+      <div class="carousel-slide carousel-slide-mix next side"><img src="" alt="next"></div>
+    </div>
+
+    <div class="dots" id="dots"></div>
+  </div>
+
+  <script>
+    const images = [
+      "../0-IMAGE/1_Guide-page/輪播/1.jpg",
+      "../0-IMAGE/1_Guide-page/輪播/2.jpg",
+      "../0-IMAGE/1_Guide-page/輪播/3.jpg",
+      "../0-IMAGE/1_Guide-page/輪播/4.jpg",
+      "../0-IMAGE/1_Guide-page/輪播/5.jpg"
+    ];
+
+    let currentIndex = 0;
+
+    const prevSlide = document.querySelector(".carousel-slide.prev");
+    const currentSlide = document.querySelector(".carousel-slide.center");
+    const nextSlide = document.querySelector(".carousel-slide.next");
+    const dotsContainer = document.getElementById("dots");
+
+    function updateSlides() {
+      const prevIndex = (currentIndex - 1 + images.length) % images.length;
+      const nextIndex = (currentIndex + 1) % images.length;
+
+      prevSlide.querySelector("img").src = images[prevIndex];
+      currentSlide.querySelector("img").src = images[currentIndex];
+      nextSlide.querySelector("img").src = images[nextIndex];
+
+      updateDots();
+    }
+
+    function updateDots() {
+      dotsContainer.innerHTML = "";
+      images.forEach((_, idx) => {
+        const dot = document.createElement("span");
+        dot.classList.add("dot");
+        if (idx === currentIndex) dot.classList.add("active");
+
+        dot.addEventListener("click", () => {
+          currentIndex = idx;
+          updateSlides();
+          resetAutoSlide();
+        });
+
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    document.querySelector(".prev-btn").addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      updateSlides();
+      resetAutoSlide();
+    });
+
+    document.querySelector(".next-btn").addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      updateSlides();
+      resetAutoSlide();
+    });
+
+    prevSlide.addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      updateSlides();
+      resetAutoSlide();
+    });
+
+    nextSlide.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      updateSlides();
+      resetAutoSlide();
+    });
+
+    let autoSlide = setInterval(() => {
+      currentIndex = (currentIndex + 1) % images.length;
+      updateSlides();
+    }, 3000);
+
+    function resetAutoSlide() {
+      clearInterval(autoSlide);
+      autoSlide = setInterval(() => {
+        currentIndex = (currentIndex + 1) % images.length;
+        updateSlides();
+      }, 3000);
+    }
+
+    currentSlide.addEventListener("mouseenter", () => clearInterval(autoSlide));
+    currentSlide.addEventListener("mouseleave", () => resetAutoSlide());
+
+    updateSlides();
+  </script>
+
+</body>
+
+</html>

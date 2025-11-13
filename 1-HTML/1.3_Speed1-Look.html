@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五張卡片輪播示範</title>
+    <base href="../0-IMAGE/1_Guide-page/熱門章節/">
+    <style>
+        /* ====== 輪播容器 ====== */
+        .center-carousel {
+            width: 100%;
+            max-width: 1000px;
+            margin: 50px auto;
+            position: relative;
+            color: #000;
+        }
+
+        .carousel-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .carousel-wrapper {
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.5s ease;
+        }
+
+        /* ====== 卡片 ====== */
+        .card {
+            position: relative;
+            width: 220px;
+            height: 150px;
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+            cursor: grab;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            padding: 2px;
+            transform: scale(0.9);
+            /* 預設縮小 */
+            transition: transform 0.5s, opacity 0.5s;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 6px 8px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(90deg, rgba(255, 0, 150, 0.7), rgba(0, 200, 255, 0.7));
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
+            backdrop-filter: blur(3px);
+        }
+
+        /* 中間卡片放大 */
+        .card.center {
+            transform: scale(1.2);
+            z-index: 2;
+        }
+
+        /* hover 顯示文字 */
+        .card:hover .card-info {
+            opacity: 1;
+        }
+
+        /* ====== 按鈕 ====== */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            padding: 12px;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .carousel-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        /* ====== pagination ====== */
+        .carousel-dots {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .carousel-dots span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 6px;
+            background-color: #555;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .carousel-dots .active {
+            background-color: #f77;
+        }
+
+        /* ====== 響應式 ====== */
+        @media (max-width: 768px) {
+            .card {
+                width: 70%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <section class="center-carousel">
+        <div class="carousel-container">
+            <h2 class="carousel-title">熱門作品展示</h2>
+            <div class="carousel-wrapper">
+                <div class="carousel-track">
+                    <div class="card"><img src="../0-IMAGE/1_Guide-page/熱門章節/1.jpg" alt="作品1">
+                        <div class="card-info">作品 1</div>
+                    </div>
+                    <div class="card"><img src="../0-IMAGE/1_Guide-page/熱門章節/2.jpg" alt="作品2">
+                        <div class="card-info">作品 2</div>
+                    </div>
+                    <div class="card"><img src="../0-IMAGE/1_Guide-page/熱門章節/4.jpg" alt="作品3">
+                        <div class="card-info">作品 3</div>
+                    </div>
+                    <div class="card"><img src="../0-IMAGE/1_Guide-page/熱門章節/2.jpg" alt="作品4">
+                        <div class="card-info">作品 4</div>
+                    </div>
+                    <div class="card"><img src="../0-IMAGE/1_Guide-page/熱門章節/1.jpg" alt="作品5">
+                        <div class="card-info">作品 5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 左右按鈕 -->
+        <button class="carousel-btn prev">&#10094;</button>
+        <button class="carousel-btn next">&#10095;</button>
+
+        <!-- 小圓點 -->
+        <div class="carousel-dots"></div>
+    </section>
+
+    <script>
+        // ====== 輪播 JS ======
+        const track = document.querySelector(".carousel-track");
+        const cards = document.querySelectorAll(".card");
+        const prevBtn = document.querySelector(".prev");
+        const nextBtn = document.querySelector(".next");
+        const dotsContainer = document.querySelector(".carousel-dots");
+
+        let centerIndex = 0;
+        const totalCards = cards.length;
+
+        // 初始化 pagination
+        cards.forEach((_, i) => {
+            const dot = document.createElement("span");
+            if (i === 0) dot.classList.add("active");
+            dot.addEventListener("click", () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        });
+        const dots = document.querySelectorAll(".carousel-dots span");
+
+        // 更新卡片 class
+        function updateCarousel() {
+            cards.forEach((card, i) => {
+                card.classList.remove("center");
+                if (i === centerIndex) {
+                    card.classList.add("center");
+                }
+            });
+            dots.forEach(dot => dot.classList.remove("active"));
+            dots[centerIndex].classList.add("active");
+        }
+
+        // 左右切換
+        function moveCarousel(direction) {
+            centerIndex = (centerIndex + direction + totalCards) % totalCards;
+            updateCarousel();
+        }
+
+        function goToSlide(i) {
+            centerIndex = i;
+            updateCarousel();
+        }
+
+        // 按鈕事件
+        prevBtn.addEventListener("click", () => moveCarousel(-1));
+        nextBtn.addEventListener("click", () => moveCarousel(1));
+
+        // 自動播放
+        let autoPlay = setInterval(() => moveCarousel(1), 4000);
+        track.addEventListener("mouseenter", () => clearInterval(autoPlay));
+        track.addEventListener("mouseleave", () => {
+            autoPlay = setInterval(() => moveCarousel(1), 4000);
+        });
+
+        // 初始化
+        updateCarousel();
+    </script>
+
+</body>
+
+</html>
